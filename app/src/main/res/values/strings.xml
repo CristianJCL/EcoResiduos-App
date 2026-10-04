@@ -41,6 +41,6 @@
     <string name="settings_title">Ajustes</string>
     <string name="settings_language_title">Idioma</string>
     <string name="settings_language_body">La interfaz está disponible en español e inglés y utiliza el idioma configurado en Android.</string>
-    <string name="settings_sync_title">Sincronización</string>
-    <string name="settings_sync_body">La arquitectura del proyecto está preparada para reemplazar el repositorio temporal por Room y un servicio web de sincronización en las siguientes etapas.</string>
+    <string name="settings_data_title">Datos</string>
+    <string name="settings_data_body">Los registros se administran mediante una capa Repository que mantiene separada la interfaz del origen de datos.</string>
 </resources>

@@ -15,9 +15,10 @@ import androidx.compose.ui.unit.dp
 import com.cristian.ecoresiduos.R
 
 /**
- * Pantalla informativa de configuración del primer avance.
+ * Pantalla de ajustes e información de la aplicación.
  *
- * El soporte de idioma es automático mediante resources/values y values-en.
+ * Los textos se obtienen de recursos localizados para respetar el idioma
+ * configurado en el dispositivo.
  */
 @Composable
 fun SettingsScreen(
@@ -55,10 +56,10 @@ fun SettingsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.settings_sync_title),
+                    text = stringResource(R.string.settings_data_title),
                     style = MaterialTheme.typography.titleMedium
                 )
-                Text(stringResource(R.string.settings_sync_body))
+                Text(stringResource(R.string.settings_data_body))
             }
         }
     }

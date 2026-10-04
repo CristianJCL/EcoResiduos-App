@@ -41,6 +41,6 @@
     <string name="settings_title">Settings</string>
     <string name="settings_language_title">Language</string>
     <string name="settings_language_body">The interface is available in Spanish and English and follows the language configured in Android.</string>
-    <string name="settings_sync_title">Synchronization</string>
-    <string name="settings_sync_body">The project architecture is ready to replace the temporary repository with Room and a web synchronization service in later stages.</string>
+    <string name="settings_data_title">Data</string>
+    <string name="settings_data_body">Records are managed through a Repository layer that keeps the user interface independent from the data source.</string>
 </resources>

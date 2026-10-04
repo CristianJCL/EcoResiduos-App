@@ -20,7 +20,7 @@ android {
 
     buildTypes {
         release {
-            // Para este primer avance no se requiere ofuscación.
+            // Mantiene el código sin minificación para conservar nombres y estructura en la compilación release.
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
         }
@@ -55,7 +55,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-core")
 
-    // Navegación entre las cuatro pantallas principales.
+    // Permite definir el grafo y cambiar entre las pantallas de la aplicación.
     implementation("androidx.navigation:navigation-compose:2.10.2")
 
     debugImplementation("androidx.compose.ui:ui-tooling")

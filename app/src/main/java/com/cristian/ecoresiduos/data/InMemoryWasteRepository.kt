@@ -1,10 +1,10 @@
 package com.cristian.ecoresiduos.data
 
 /**
- * Implementación temporal del Repository para el primer avance de UI.
+ * Implementación en memoria del contrato WasteRepository.
  *
- * Mantiene una colección en memoria y permite demostrar altas, consultas y
- * eliminaciones sin mezclar la capa de datos con los composables.
+ * Mantiene la colección de registros en una lista y concentra las operaciones
+ * de consulta, alta y eliminación fuera de la capa de interfaz de usuario.
  */
 class InMemoryWasteRepository : WasteRepository {
 

@@ -5,11 +5,10 @@ import com.cristian.ecoresiduos.data.InMemoryWasteRepository
 import com.cristian.ecoresiduos.data.WasteRepository
 
 /**
- * Contenedor mínimo de dependencias del proyecto.
+ * Clase Application utilizada como contenedor de dependencias.
  *
- * En esta primera fase el Repository utiliza memoria para validar la UI y la
- * arquitectura. En una etapa posterior la misma interfaz será implementada con
- * Room para almacenamiento local y con un servicio web para sincronización.
+ * Crea una sola instancia de WasteRepository para compartir la misma fuente
+ * de datos entre las pantallas y el ViewModel durante la ejecución de la app.
  */
 class EcoResiduosApplication : Application() {
 

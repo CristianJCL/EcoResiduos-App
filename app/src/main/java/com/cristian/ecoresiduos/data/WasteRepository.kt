@@ -1,10 +1,10 @@
 package com.cristian.ecoresiduos.data
 
 /**
- * Contrato que separa la interfaz de usuario del origen de los datos.
+ * Contrato de acceso a los registros de residuos.
  *
- * Gracias a esta interfaz, el ViewModel no necesita saber si los registros
- * provienen de memoria, Room o un servicio web.
+ * Separa el ViewModel del mecanismo concreto de almacenamiento, por lo que la
+ * interfaz de usuario trabaja siempre con las mismas operaciones de datos.
  */
 interface WasteRepository {
     fun getAll(): List<WasteRecord>
