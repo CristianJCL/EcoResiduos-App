@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EcoWaste</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_records">Records</string>
+    <string name="nav_add">New</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="home_title">EcoWaste</string>
+    <string name="home_subtitle">Simple organic waste tracking for schools and small businesses.</string>
+    <string name="summary_records">Records</string>
+    <string name="summary_weight">Total weight</string>
+    <string name="summary_composted">Sent to compost</string>
+    <string name="kg_value">%.1f kg</string>
+
+    <string name="records_title">Records</string>
+    <string name="records_empty">There are no records yet.</string>
+    <string name="record_weight">Weight: %.1f kg</string>
+    <string name="record_source">Source: %1$s</string>
+    <string name="record_date_time">%1$s · %2$s</string>
+    <string name="record_composted_yes">Destination: compost</string>
+    <string name="record_composted_no">Destination: pending</string>
+
+    <string name="add_title">New record</string>
+    <string name="field_weight">Approximate weight (kg)</string>
+    <string name="field_source">Source location</string>
+    <string name="field_type">Waste type</string>
+    <string name="field_composted">Sent to compost</string>
+    <string name="field_notes">Notes</string>
+    <string name="type_food">Food scraps</string>
+    <string name="type_fruit_vegetable">Fruit and vegetables</string>
+    <string name="type_garden">Garden waste</string>
+
+    <string name="action_new_record">Register waste</string>
+    <string name="action_select_time">Time: %1$s</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete record</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_body">The interface is available in Spanish and English and follows the language configured in Android.</string>
+    <string name="settings_sync_title">Synchronization</string>
+    <string name="settings_sync_body">The project architecture is ready to replace the temporary repository with Room and a web synchronization service in later stages.</string>
+</resources>

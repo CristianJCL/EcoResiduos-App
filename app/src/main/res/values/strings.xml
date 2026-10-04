@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EcoResiduos</string>
+
+    <string name="nav_home">Inicio</string>
+    <string name="nav_records">Registros</string>
+    <string name="nav_add">Nuevo</string>
+    <string name="nav_settings">Ajustes</string>
+
+    <string name="home_title">EcoResiduos</string>
+    <string name="home_subtitle">Control sencillo de residuos orgánicos para escuelas y pequeñas empresas.</string>
+    <string name="summary_records">Registros</string>
+    <string name="summary_weight">Peso total</string>
+    <string name="summary_composted">Enviados a composta</string>
+    <string name="kg_value">%.1f kg</string>
+
+    <string name="records_title">Registros</string>
+    <string name="records_empty">Aún no hay registros.</string>
+    <string name="record_weight">Peso: %.1f kg</string>
+    <string name="record_source">Origen: %1$s</string>
+    <string name="record_date_time">%1$s · %2$s</string>
+    <string name="record_composted_yes">Destino: composta</string>
+    <string name="record_composted_no">Destino: pendiente</string>
+
+    <string name="add_title">Nuevo registro</string>
+    <string name="field_weight">Peso aproximado (kg)</string>
+    <string name="field_source">Lugar de origen</string>
+    <string name="field_type">Tipo de residuo</string>
+    <string name="field_composted">Destinado a composta</string>
+    <string name="field_notes">Observaciones</string>
+    <string name="type_food">Restos de comida</string>
+    <string name="type_fruit_vegetable">Frutas y verduras</string>
+    <string name="type_garden">Jardinería</string>
+
+    <string name="action_new_record">Registrar residuo</string>
+    <string name="action_select_time">Hora: %1$s</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_delete">Eliminar registro</string>
+
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_language_title">Idioma</string>
+    <string name="settings_language_body">La interfaz está disponible en español e inglés y utiliza el idioma configurado en Android.</string>
+    <string name="settings_sync_title">Sincronización</string>
+    <string name="settings_sync_body">La arquitectura del proyecto está preparada para reemplazar el repositorio temporal por Room y un servicio web de sincronización en las siguientes etapas.</string>
+</resources>
