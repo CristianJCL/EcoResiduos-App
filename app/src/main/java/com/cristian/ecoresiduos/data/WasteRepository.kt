@@ -1,13 +1,11 @@
 package com.cristian.ecoresiduos.data
 
-/**
- * Contrato de acceso a los registros de residuos.
- *
- * Separa el ViewModel del mecanismo concreto de almacenamiento, por lo que la
- * interfaz de usuario trabaja siempre con las mismas operaciones de datos.
- */
+import kotlinx.coroutines.flow.Flow
+
+/** Operaciones de persistencia que necesita el ViewModel. */
 interface WasteRepository {
-    fun getAll(): List<WasteRecord>
-    fun add(record: WasteRecord)
-    fun delete(id: Long)
+    fun observeAll(): Flow<List<WasteRecord>>
+    suspend fun getById(id: Long): WasteRecord?
+    suspend fun save(record: WasteRecord)
+    suspend fun delete(id: Long)
 }
