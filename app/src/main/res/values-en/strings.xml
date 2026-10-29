@@ -43,4 +43,15 @@
     <string name="settings_language_body">The interface is available in Spanish and English and follows the language configured in Android.</string>
     <string name="settings_data_title">Data</string>
     <string name="settings_data_body">Records are managed through a Repository layer that keeps the user interface independent from the data source.</string>
+
+    <string name="nav_network">Web</string>
+    <string name="edit_title">Edit record</string>
+    <string name="action_edit">Edit</string>
+    <string name="network_title">Web service connection</string>
+    <string name="network_notice">Public API for testing. HTTP operations return responses, but changes are not stored permanently on the server.</string>
+    <string name="network_list">Fetch</string>
+    <string name="network_detail">View details</string>
+    <string name="network_send">Send latest record</string>
+    <string name="network_update">Update example</string>
+    <string name="network_delete">Delete example</string>
 </resources>
