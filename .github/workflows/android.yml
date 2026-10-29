@@ -27,7 +27,7 @@ jobs:
           SDKMANAGER="$(find "${ANDROID_HOME:-/usr/local/lib/android/sdk}/cmdline-tools" -name sdkmanager -type f | head -n 1)"
           test -x "$SDKMANAGER"
           yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" "platforms;android-37"
+          "$SDKMANAGER" "platforms;android-36"
 
       - name: Configurar Gradle
         uses: gradle/actions/setup-gradle@v4
