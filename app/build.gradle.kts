@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.cristian.ecoresiduos"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.cristian.ecoresiduos"
