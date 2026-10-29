@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,7 @@ import com.cristian.ecoresiduos.data.WasteType
 fun RecordsScreen(
     records: List<WasteRecord>,
     onDelete: (Long) -> Unit,
+    onEdit: (Long) -> Unit,
     bottomPadding: Dp,
     modifier: Modifier = Modifier
 ) {
@@ -67,7 +69,8 @@ fun RecordsScreen(
                 ) { record ->
                     RecordCard(
                         record = record,
-                        onDelete = { onDelete(record.id) }
+                        onDelete = { onDelete(record.id) },
+                        onEdit = { onEdit(record.id) }
                     )
                 }
             }
@@ -79,7 +82,8 @@ fun RecordsScreen(
 @Composable
 private fun RecordCard(
     record: WasteRecord,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onEdit: () -> Unit
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -109,6 +113,9 @@ private fun RecordCard(
                 )
             }
 
+            TextButton(onClick = onEdit) {
+                Text(stringResource(R.string.action_edit))
+            }
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.Delete,
