@@ -10,13 +10,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,170 +20,105 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import com.cristian.ecoresiduos.R
-import com.cristian.ecoresiduos.ui.screens.AddRecordScreen
-import com.cristian.ecoresiduos.ui.screens.HomeScreen
-import com.cristian.ecoresiduos.ui.screens.RecordsScreen
-import com.cristian.ecoresiduos.ui.screens.SettingsScreen
+import com.cristian.ecoresiduos.ui.screens.*
 
-/**
- * Destinos disponibles en el menú principal.
- */
-private data class AppDestination(
-    val route: String,
-    @StringRes val labelRes: Int,
-    val icon: ImageVector
-)
+/** Pantallas disponibles desde el menú principal. */
+private data class Destination(val route: String, @StringRes val title: Int, val icon: ImageVector)
 
 private val destinations = listOf(
-    AppDestination("home", R.string.nav_home, Icons.Default.Home),
-    AppDestination("records", R.string.nav_records, Icons.Default.List),
-    AppDestination("add", R.string.nav_add, Icons.Default.Add),
-    AppDestination("settings", R.string.nav_settings, Icons.Default.Settings)
+    Destination("home", R.string.nav_home, Icons.Default.Home),
+    Destination("records", R.string.nav_records, Icons.Default.List),
+    Destination("add", R.string.nav_add, Icons.Default.Add),
+    Destination("network", R.string.nav_network, Icons.Default.List),
+    Destination("settings", R.string.nav_settings, Icons.Default.Settings)
 )
 
-/**
- * Contenedor principal de navegación.
- *
- * En pantallas compactas utiliza una barra inferior. En anchos de 700 dp o
- * más cambia a NavigationRail para aprovechar mejor el espacio disponible.
- */
+/** Muestra NavigationBar en teléfonos y NavigationRail en pantallas anchas. */
 @Composable
 fun EcoResiduosApp(viewModel: EcoResiduosViewModel) {
-    val navController = rememberNavController()
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route ?: "home"
+    val nav = rememberNavController()
+    val entry by nav.currentBackStackEntryAsState()
+    val route = entry?.destination?.route ?: "home"
 
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val wideScreen = maxWidth >= 700.dp
-
-        if (wideScreen) {
-            Row(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        if (maxWidth >= 700.dp) {
+            Row(Modifier.fillMaxSize()) {
                 NavigationRail {
-                    destinations.forEach { destination ->
+                    destinations.forEach { item ->
                         NavigationRailItem(
-                            selected = currentRoute == destination.route,
-                            onClick = { navigateSingleTop(navController, destination.route) },
-                            icon = {
-                                Icon(
-                                    imageVector = destination.icon,
-                                    contentDescription = stringResource(destination.labelRes)
-                                )
-                            },
-                            label = { Text(stringResource(destination.labelRes)) }
+                            selected = route == item.route,
+                            onClick = { goTo(nav, item.route) },
+                            icon = { Icon(item.icon, contentDescription = null) },
+                            label = { Text(stringResource(item.title)) }
                         )
                     }
                 }
-
-                Box(modifier = Modifier.weight(1f)) {
-                    EcoResiduosNavHost(
-                        navController = navController,
-                        viewModel = viewModel
-                    )
-                }
+                Box(Modifier.weight(1f)) { Screens(nav, viewModel) }
             }
         } else {
-            Scaffold(
-                bottomBar = {
-                    NavigationBar {
-                        destinations.forEach { destination ->
-                            NavigationBarItem(
-                                selected = currentRoute == destination.route,
-                                onClick = { navigateSingleTop(navController, destination.route) },
-                                icon = {
-                                    Icon(
-                                        imageVector = destination.icon,
-                                        contentDescription = stringResource(destination.labelRes)
-                                    )
-                                },
-                                label = { Text(stringResource(destination.labelRes)) }
-                            )
-                        }
+            Scaffold(bottomBar = {
+                NavigationBar {
+                    destinations.forEach { item ->
+                        NavigationBarItem(
+                            selected = route == item.route,
+                            onClick = { goTo(nav, item.route) },
+                            icon = { Icon(item.icon, contentDescription = null) },
+                            label = { Text(stringResource(item.title)) }
+                        )
                     }
                 }
-            ) { innerPadding ->
-                EcoResiduosNavHost(
-                    navController = navController,
-                    viewModel = viewModel,
-                    bottomPadding = innerPadding.calculateBottomPadding()
-                )
+            }) { padding ->
+                Screens(nav, viewModel, padding.calculateBottomPadding())
             }
         }
     }
 }
 
-/**
- * Navega sin crear copias repetidas del mismo destino y conserva el estado
- * básico de cada pantalla del menú.
- */
-private fun navigateSingleTop(navController: NavHostController, route: String) {
-    navController.navigate(route) {
-        popUpTo(navController.graph.findStartDestination().id) {
-            saveState = true
-        }
+/** Cambia de pantalla conservando una sola instancia de cada destino. */
+private fun goTo(nav: NavHostController, route: String) {
+    nav.navigate(route) {
+        popUpTo(nav.graph.findStartDestination().id) { saveState = true }
         launchSingleTop = true
         restoreState = true
     }
 }
 
-/**
- * Grafo de navegación de las cuatro pantallas del proyecto.
- */
+/** Conecta el NavHost con el ViewModel y los eventos de cada pantalla. */
 @Composable
-private fun EcoResiduosNavHost(
-    navController: NavHostController,
-    viewModel: EcoResiduosViewModel,
-    bottomPadding: Dp = 0.dp
-) {
-    NavHost(
-        navController = navController,
-        startDestination = "home",
-        modifier = Modifier.fillMaxSize()
-    ) {
+private fun Screens(nav: NavHostController, vm: EcoResiduosViewModel, bottom: Dp = 0.dp) {
+    NavHost(navController = nav, startDestination = "home", modifier = Modifier.fillMaxSize()) {
         composable("home") {
-            HomeScreen(
-                records = viewModel.records,
-                onAddClick = { navigateSingleTop(navController, "add") },
-                bottomPadding = bottomPadding
-            )
+            HomeScreen(vm.records,
+                onAddClick = { vm.resetForm(); goTo(nav, "add") },
+                bottomPadding = bottom)
         }
-
         composable("records") {
-            RecordsScreen(
-                records = viewModel.records,
-                onDelete = viewModel::deleteRecord,
-                bottomPadding = bottomPadding
-            )
+            RecordsScreen(vm.records, vm::deleteRecord,
+                onEdit = { id -> vm.beginEdit(id); goTo(nav, "add") },
+                bottomPadding = bottom)
         }
-
         composable("add") {
             AddRecordScreen(
-                state = viewModel.formState,
-                onWeightChange = viewModel::updateWeight,
-                onSourceChange = viewModel::updateSource,
-                onNotesChange = viewModel::updateNotes,
-                onTimeChange = viewModel::updateTime,
-                onTypeChange = viewModel::updateType,
-                onCompostedChange = viewModel::updateComposted,
-                onSave = {
-                    if (viewModel.saveRecord()) {
-                        navigateSingleTop(navController, "records")
-                    }
-                },
-                onCancel = {
-                    viewModel.resetForm()
-                    navigateSingleTop(navController, "home")
-                },
-                bottomPadding = bottomPadding
+                state = vm.formState,
+                isEditing = vm.editingId != null,
+                onWeightChange = vm::updateWeight,
+                onSourceChange = vm::updateSource,
+                onNotesChange = vm::updateNotes,
+                onTimeChange = vm::updateTime,
+                onTypeChange = vm::updateType,
+                onCompostedChange = vm::updateComposted,
+                onSave = { if (vm.saveRecord()) goTo(nav, "records") },
+                onCancel = { vm.resetForm(); goTo(nav, "home") },
+                bottomPadding = bottom
             )
         }
-
-        composable("settings") {
-            SettingsScreen(bottomPadding = bottomPadding)
+        composable("network") {
+            NetworkScreen(vm.remoteItems, vm.networkMessage, vm.networkLoading,
+                vm::loadRemote, vm::readRemoteDetail, vm::sendRemote,
+                vm::updateRemote, vm::deleteRemote, bottom)
         }
+        composable("settings") { SettingsScreen(bottomPadding = bottom) }
     }
 }
