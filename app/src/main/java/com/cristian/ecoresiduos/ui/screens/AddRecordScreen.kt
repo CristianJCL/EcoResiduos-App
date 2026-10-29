@@ -38,6 +38,7 @@ import java.util.Calendar
 @Composable
 fun AddRecordScreen(
     state: WasteFormState,
+    isEditing: Boolean,
     onWeightChange: (String) -> Unit,
     onSourceChange: (String) -> Unit,
     onNotesChange: (String) -> Unit,
@@ -60,7 +61,7 @@ fun AddRecordScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text(
-            text = stringResource(R.string.add_title),
+            text = stringResource(if (isEditing) R.string.edit_title else R.string.add_title),
             style = MaterialTheme.typography.headlineMedium
         )
 
