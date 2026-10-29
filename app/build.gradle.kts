@@ -65,8 +65,8 @@ dependencies {
     ksp("androidx.room:room-compiler:2.8.5")
 
     // Retrofit gestiona las solicitudes REST y convierte las respuestas JSON.
-    implementation("com.squareup.retrofit2:retrofit:2.9.4")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.4")
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
