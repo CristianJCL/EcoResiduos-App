@@ -43,4 +43,15 @@
     <string name="settings_language_body">La interfaz está disponible en español e inglés y utiliza el idioma configurado en Android.</string>
     <string name="settings_data_title">Datos</string>
     <string name="settings_data_body">Los registros se administran mediante una capa Repository que mantiene separada la interfaz del origen de datos.</string>
+
+    <string name="nav_network">Web</string>
+    <string name="edit_title">Editar registro</string>
+    <string name="action_edit">Editar</string>
+    <string name="network_title">Conexión con servicio web</string>
+    <string name="network_notice">Servicio público para pruebas. Las operaciones HTTP responden, pero los cambios no se almacenan de forma permanente en el servidor.</string>
+    <string name="network_list">Consultar</string>
+    <string name="network_detail">Ver detalle</string>
+    <string name="network_send">Enviar último registro</string>
+    <string name="network_update">Actualizar ejemplo</string>
+    <string name="network_delete">Eliminar ejemplo</string>
 </resources>
