@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -58,5 +59,17 @@ dependencies {
     // Permite definir el grafo y cambiar entre las pantallas de la aplicación.
     implementation("androidx.navigation:navigation-compose:2.10.2")
 
+    // Room guarda datos en SQLite; KSP genera los DAO.
+    implementation("androidx.room:room-runtime:2.8.5")
+    implementation("androidx.room:room-ktx:2.8.5")
+    ksp("androidx.room:room-compiler:2.8.5")
+
+    // Retrofit gestiona las solicitudes REST y convierte las respuestas JSON.
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.room:room-testing:2.8.5")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
