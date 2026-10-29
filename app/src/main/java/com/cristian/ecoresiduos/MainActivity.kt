@@ -9,26 +9,21 @@ import com.cristian.ecoresiduos.ui.EcoResiduosApp
 import com.cristian.ecoresiduos.ui.EcoResiduosViewModel
 import com.cristian.ecoresiduos.ui.theme.EcoResiduosTheme
 
-/**
- * Activity principal del proyecto EcoResiduos.
- *
- * La Activity solo prepara Compose y obtiene el ViewModel. La lógica de pantalla
- * se mantiene fuera de esta clase para conservar una estructura sencilla.
- */
+/** Inicia Compose y proporciona los dos Repository al ViewModel. */
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         setContent {
             EcoResiduosTheme {
-                val application = application as EcoResiduosApplication
+                val container = (application as EcoResiduosApplication).container
                 val viewModel: EcoResiduosViewModel = viewModel(
-                    factory = EcoResiduosViewModel.factory(application.repository)
+                    factory = EcoResiduosViewModel.factory(
+                        container.localRepository,
+                        container.networkRepository
+                    )
                 )
-
-                EcoResiduosApp(viewModel = viewModel)
+                EcoResiduosApp(viewModel)
             }
         }
     }
