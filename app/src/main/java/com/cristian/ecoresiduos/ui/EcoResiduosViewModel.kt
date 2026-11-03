@@ -38,10 +38,11 @@ data class WasteFormState(
  * El ViewModel se comunica exclusivamente con los Repository.
  */
 class EcoResiduosViewModel(
-    private val local: WasteRepository,
-    private val remote: NetworkWasteRepository
+    private val localRepository: WasteRepository,
+    private val networkRepository: NetworkWasteRepository
 ) : ViewModel() {
 
+    // 1. DATOS LOCALES: lista visible y formulario de captura.
     private val _records = mutableStateListOf<WasteRecord>()
     val records: List<WasteRecord> get() = _records
 
@@ -50,6 +51,7 @@ class EcoResiduosViewModel(
     var editingId by mutableStateOf<Long?>(null)
         private set
 
+    // 2. SERVICIO WEB: respuestas y estado de conexión.
     var remoteItems by mutableStateOf<List<RemotePost>>(emptyList())
         private set
     var networkMessage by mutableStateOf("")
@@ -60,13 +62,14 @@ class EcoResiduosViewModel(
     init {
         // Flow notifica los cambios de SQLite para actualizar la lista y el resumen.
         viewModelScope.launch {
-            local.observeAll().collect { items ->
+            localRepository.observeAll().collect { items ->
                 _records.clear()
                 _records.addAll(items)
             }
         }
     }
 
+    // 3. FORMULARIO: cada campo se actualiza desde Compose.
     fun updateWeight(value: String) { formState = formState.copy(weight = value) }
     fun updateSource(value: String) { formState = formState.copy(source = value) }
     fun updateNotes(value: String) { formState = formState.copy(notes = value) }
@@ -103,14 +106,14 @@ class EcoResiduosViewModel(
             composted = state.composted,
             notes = state.notes.trim()
         )
-        viewModelScope.launch { local.save(record) }
+        viewModelScope.launch { localRepository.save(record) }
         resetForm()
         return true
     }
 
     /** Elimina el registro en SQLite y actualiza la lista mediante Flow. */
     fun deleteRecord(id: Long) {
-        viewModelScope.launch { local.delete(id) }
+        viewModelScope.launch { localRepository.delete(id) }
     }
 
     fun resetForm() {
@@ -118,6 +121,7 @@ class EcoResiduosViewModel(
         formState = WasteFormState()
     }
 
+    // 4. RETROFIT: ejecuta una petición y muestra su resultado o error.
     private fun request(action: suspend () -> String) {
         viewModelScope.launch {
             networkLoading = true
@@ -130,41 +134,41 @@ class EcoResiduosViewModel(
 
     /** Recupera publicaciones de ejemplo de la API REST. */
     fun loadRemote() = request {
-        remoteItems = remote.list()
+        remoteItems = networkRepository.list()
         "GET: ${remoteItems.size} resultados recibidos"
     }
 
     fun readRemoteDetail() = request {
-        val item = remote.detail(1)
+        val item = networkRepository.detail(1)
         "GET /1: ${item.title}"
     }
 
     /** Envía por POST el último residuo guardado localmente. */
     fun sendRemote() = request {
         val record = records.firstOrNull() ?: return@request "Registra primero un residuo"
-        val response = remote.upload(record)
+        val response = networkRepository.upload(record)
         "POST: respuesta recibida, ID ${response.id}"
     }
 
     fun updateRemote() = request {
         val record = records.firstOrNull() ?: return@request "Registra primero un residuo"
-        val response = remote.update(1, record)
+        val response = networkRepository.update(1, record)
         "PUT /1: ${response.title}"
     }
 
     fun deleteRemote() = request {
-        "DELETE /1: código HTTP ${remote.remove(1)}"
+        "DELETE /1: código HTTP ${networkRepository.remove(1)}"
     }
 
     companion object {
         /** Construye el ViewModel con los Repository del contenedor de aplicación. */
         fun factory(
-            local: WasteRepository,
-            remote: NetworkWasteRepository
+            localRepository: WasteRepository,
+            networkRepository: NetworkWasteRepository
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                EcoResiduosViewModel(local, remote) as T
+                EcoResiduosViewModel(localRepository, networkRepository) as T
         }
     }
 }
