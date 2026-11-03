@@ -55,7 +55,7 @@ fun EcoResiduosApp(viewModel: EcoResiduosViewModel) {
                         )
                     }
                 }
-                Box(Modifier.weight(1f)) { Screens(nav, viewModel) }
+                Box(Modifier.weight(1f)) { AppScreens(nav, viewModel) }
             }
         } else {
             Scaffold(bottomBar = {
@@ -70,7 +70,7 @@ fun EcoResiduosApp(viewModel: EcoResiduosViewModel) {
                     }
                 }
             }) { padding ->
-                Screens(nav, viewModel, padding.calculateBottomPadding())
+                AppScreens(nav, viewModel, padding.calculateBottomPadding())
             }
         }
     }
@@ -85,40 +85,70 @@ private fun goTo(nav: NavHostController, route: String) {
     }
 }
 
-/** Conecta el NavHost con el ViewModel y los eventos de cada pantalla. */
+/** El NavHost indica qué pantalla mostrar para cada ruta del menú. */
 @Composable
-private fun Screens(nav: NavHostController, vm: EcoResiduosViewModel, bottom: Dp = 0.dp) {
+private fun AppScreens(
+    nav: NavHostController,
+    viewModel: EcoResiduosViewModel,
+    bottomPadding: Dp = 0.dp
+) {
     NavHost(navController = nav, startDestination = "home", modifier = Modifier.fillMaxSize()) {
         composable("home") {
-            HomeScreen(vm.records,
-                onAddClick = { vm.resetForm(); goTo(nav, "add") },
-                bottomPadding = bottom)
+            HomeScreen(
+                records = viewModel.records,
+                onAddClick = {
+                    viewModel.resetForm()
+                    goTo(nav, "add")
+                },
+                bottomPadding = bottomPadding
+            )
         }
         composable("records") {
-            RecordsScreen(vm.records, vm::deleteRecord,
-                onEdit = { id -> vm.beginEdit(id); goTo(nav, "add") },
-                bottomPadding = bottom)
+            RecordsScreen(
+                records = viewModel.records,
+                onDelete = viewModel::deleteRecord,
+                onEdit = { id ->
+                    viewModel.beginEdit(id)
+                    goTo(nav, "add")
+                },
+                bottomPadding = bottomPadding
+            )
         }
         composable("add") {
             AddRecordScreen(
-                state = vm.formState,
-                isEditing = vm.editingId != null,
-                onWeightChange = vm::updateWeight,
-                onSourceChange = vm::updateSource,
-                onNotesChange = vm::updateNotes,
-                onTimeChange = vm::updateTime,
-                onTypeChange = vm::updateType,
-                onCompostedChange = vm::updateComposted,
-                onSave = { if (vm.saveRecord()) goTo(nav, "records") },
-                onCancel = { vm.resetForm(); goTo(nav, "home") },
-                bottomPadding = bottom
+                state = viewModel.formState,
+                isEditing = viewModel.editingId != null,
+                onWeightChange = viewModel::updateWeight,
+                onSourceChange = viewModel::updateSource,
+                onNotesChange = viewModel::updateNotes,
+                onTimeChange = viewModel::updateTime,
+                onTypeChange = viewModel::updateType,
+                onCompostedChange = viewModel::updateComposted,
+                onSave = {
+                    if (viewModel.saveRecord()) goTo(nav, "records")
+                },
+                onCancel = {
+                    viewModel.resetForm()
+                    goTo(nav, "home")
+                },
+                bottomPadding = bottomPadding
             )
         }
         composable("network") {
-            NetworkScreen(vm.remoteItems, vm.networkMessage, vm.networkLoading,
-                vm::loadRemote, vm::readRemoteDetail, vm::sendRemote,
-                vm::updateRemote, vm::deleteRemote, bottom)
+            NetworkScreen(
+                items = viewModel.remoteItems,
+                message = viewModel.networkMessage,
+                loading = viewModel.networkLoading,
+                onList = viewModel::loadRemote,
+                onDetail = viewModel::readRemoteDetail,
+                onSend = viewModel::sendRemote,
+                onUpdate = viewModel::updateRemote,
+                onDelete = viewModel::deleteRemote,
+                bottomPadding = bottomPadding
+            )
         }
-        composable("settings") { SettingsScreen(bottomPadding = bottom) }
+        composable("settings") {
+            SettingsScreen(bottomPadding = bottomPadding)
+        }
     }
 }
