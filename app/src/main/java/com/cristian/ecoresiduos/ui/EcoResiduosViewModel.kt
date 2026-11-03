@@ -27,7 +27,10 @@ data class WasteFormState(
     val composted: Boolean = false
 ) {
     val isValid: Boolean
-        get() = source.isNotBlank() && (weight.toDoubleOrNull() ?: 0.0) > 0.0
+        get() {
+            val kilos = weight.toDoubleOrNull()
+            return source.isNotBlank() && kilos != null && kilos.isFinite() && kilos > 0.0
+        }
 }
 
 /**
