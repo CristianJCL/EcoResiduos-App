@@ -37,12 +37,16 @@ jobs:
           chmod +x gradlew
           ./gradlew testDebugUnitTest assembleDebug --stacktrace
 
+      - name: Empaquetar proyecto para revisión
+        run: git archive --format=zip --output=EcoResiduos-Codigo.zip HEAD
+
       - name: Guardar APK y resultados
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ecoresiduos-build
           path: |
+            EcoResiduos-Codigo.zip
             app/build/outputs/apk/debug/**
             app/build/reports/tests/testDebugUnitTest/**
           if-no-files-found: ignore
