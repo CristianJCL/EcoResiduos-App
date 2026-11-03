@@ -23,7 +23,7 @@ if errorlevel 1 (
     echo ERROR: No se encontro PowerShell de Windows.
     goto ERROR
 )
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0PREPARAR_ECORESIDUOS.ps1" -Carpeta "%~dp0"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0PREPARAR_ECORESIDUOS.ps1"
 if errorlevel 1 goto ERROR
 
 echo.
