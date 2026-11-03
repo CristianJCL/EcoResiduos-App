@@ -18,6 +18,7 @@
     <string name="records_empty">Aún no hay registros.</string>
     <string name="record_weight">Peso: %.1f kg</string>
     <string name="record_source">Origen: %1$s</string>
+    <string name="record_notes">Observaciones: %1$s</string>
     <string name="record_date_time">%1$s · %2$s</string>
     <string name="record_composted_yes">Destino: composta</string>
     <string name="record_composted_no">Destino: pendiente</string>
