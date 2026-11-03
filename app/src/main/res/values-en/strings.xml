@@ -18,6 +18,7 @@
     <string name="records_empty">There are no records yet.</string>
     <string name="record_weight">Weight: %.1f kg</string>
     <string name="record_source">Source: %1$s</string>
+    <string name="record_notes">Notes: %1$s</string>
     <string name="record_date_time">%1$s · %2$s</string>
     <string name="record_composted_yes">Destination: compost</string>
     <string name="record_composted_no">Destination: pending</string>
