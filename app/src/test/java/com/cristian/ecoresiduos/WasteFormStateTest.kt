@@ -12,6 +12,10 @@ class WasteFormStateTest {
     @Test fun rejectsEmptySource() {
         assertFalse(WasteFormState(weight = "2.5").isValid)
     }
+    @Test fun rejectsInfiniteWeight() {
+        assertFalse(WasteFormState(weight = "Infinity", source = "Comedor").isValid)
+    }
+
     @Test fun rejectsInvalidWeight() {
         assertFalse(WasteFormState(weight = "0", source = "Comedor").isValid)
     }
