@@ -102,6 +102,9 @@ private fun RecordCard(
                 )
                 Text(stringResource(R.string.record_weight, record.weightKg))
                 Text(stringResource(R.string.record_source, record.source))
+                if (record.notes.isNotBlank()) {
+                    Text(stringResource(R.string.record_notes, record.notes))
+                }
                 Text(stringResource(R.string.record_date_time, record.date, record.time))
                 Text(
                     text = if (record.composted) {
