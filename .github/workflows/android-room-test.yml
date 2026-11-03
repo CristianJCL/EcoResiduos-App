@@ -40,6 +40,8 @@ jobs:
           script: |
             chmod +x gradlew
             ./gradlew connectedDebugAndroidTest
+            # Los tests pueden desinstalar la app; se instala otra vez para abrirla.
+            ./gradlew installDebug
             adb shell am start -n com.cristian.ecoresiduos/.MainActivity
             sleep 5
             adb exec-out screencap -p > ecoresiduos-emulador.png
