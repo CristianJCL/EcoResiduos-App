@@ -73,8 +73,14 @@ fun NetworkScreen(
         items.forEach { post ->
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    Text("ID ${post.id}", style = MaterialTheme.typography.titleSmall)
-                    Text(post.title, style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        stringResource(R.string.network_item_name, post.id ?: 0),
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        stringResource(R.string.network_item_subtitle),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
