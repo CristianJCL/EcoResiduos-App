@@ -1,58 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">EcoWaste</string>
+    <string name="app_name">EcoResiduos</string>
 
-    <string name="nav_home">Home</string>
-    <string name="nav_records">Records</string>
-    <string name="nav_add">New</string>
-    <string name="nav_settings">Settings</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_records">Registros</string>
+    <string name="nav_add">Nuevo</string>
+    <string name="nav_settings">Ajustes</string>
 
-    <string name="home_title">EcoWaste</string>
-    <string name="home_subtitle">Simple organic waste tracking for schools and small businesses.</string>
-    <string name="summary_records">Records</string>
-    <string name="summary_weight">Total weight</string>
-    <string name="summary_composted">Sent to compost</string>
+    <string name="home_title">EcoResiduos</string>
+    <string name="home_subtitle">Control sencillo de residuos orgánicos para escuelas y pequeñas empresas.</string>
+    <string name="summary_records">Registros</string>
+    <string name="summary_weight">Peso total</string>
+    <string name="summary_composted">Enviados a composta</string>
     <string name="kg_value">%.1f kg</string>
 
-    <string name="records_title">Records</string>
-    <string name="records_empty">There are no records yet.</string>
-    <string name="record_weight">Weight: %.1f kg</string>
-    <string name="record_source">Source: %1$s</string>
-    <string name="record_notes">Notes: %1$s</string>
+    <string name="records_title">Registros</string>
+    <string name="records_empty">Aún no hay registros.</string>
+    <string name="record_weight">Peso: %.1f kg</string>
+    <string name="record_source">Origen: %1$s</string>
+    <string name="record_notes">Observaciones: %1$s</string>
     <string name="record_date_time">%1$s · %2$s</string>
-    <string name="record_composted_yes">Destination: compost</string>
-    <string name="record_composted_no">Destination: pending</string>
+    <string name="record_composted_yes">Destino: composta</string>
+    <string name="record_composted_no">Destino: pendiente</string>
 
-    <string name="add_title">New record</string>
-    <string name="field_weight">Approximate weight (kg)</string>
-    <string name="field_source">Source location</string>
-    <string name="field_type">Waste type</string>
-    <string name="field_composted">Sent to compost</string>
-    <string name="field_notes">Notes</string>
-    <string name="type_food">Food scraps</string>
-    <string name="type_fruit_vegetable">Fruit and vegetables</string>
-    <string name="type_garden">Garden waste</string>
+    <string name="add_title">Nuevo registro</string>
+    <string name="field_weight">Peso aproximado (kg)</string>
+    <string name="field_source">Lugar de origen</string>
+    <string name="field_type">Tipo de residuo</string>
+    <string name="field_composted">Destinado a composta</string>
+    <string name="field_notes">Observaciones</string>
+    <string name="type_food">Restos de comida</string>
+    <string name="type_fruit_vegetable">Frutas y verduras</string>
+    <string name="type_garden">Jardinería</string>
 
-    <string name="action_new_record">Register waste</string>
-    <string name="action_select_time">Time: %1$s</string>
-    <string name="action_save">Save</string>
-    <string name="action_cancel">Cancel</string>
-    <string name="action_delete">Delete record</string>
+    <string name="action_new_record">Registrar residuo</string>
+    <string name="action_select_time">Hora: %1$s</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_delete">Eliminar registro</string>
 
-    <string name="settings_title">Settings</string>
-    <string name="settings_language_title">Language</string>
-    <string name="settings_language_body">The interface is available in Spanish and English and follows the language configured in Android.</string>
-    <string name="settings_data_title">Data</string>
-    <string name="settings_data_body">Records are managed through a Repository layer that keeps the user interface independent from the data source.</string>
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_language_title">Idioma</string>
+    <string name="settings_language_body">Los menús y mensajes de EcoResiduos se muestran en español.</string>
+    <string name="settings_data_title">Datos</string>
+    <string name="settings_data_body">Los registros se guardan en el teléfono con Room. Puedes consultarlos y editarlos sin Internet.</string>
 
     <string name="nav_network">Web</string>
-    <string name="edit_title">Edit record</string>
-    <string name="action_edit">Edit</string>
-    <string name="network_title">Web service connection</string>
-    <string name="network_notice">Public API for testing. HTTP operations return responses, but changes are not stored permanently on the server.</string>
-    <string name="network_list">Fetch</string>
-    <string name="network_detail">View details</string>
-    <string name="network_send">Send latest record</string>
-    <string name="network_update">Update example</string>
-    <string name="network_delete">Delete example</string>
+    <string name="edit_title">Editar registro</string>
+    <string name="action_edit">Editar</string>
+    <string name="network_title">Conexión con servicio web</string>
+    <string name="network_notice">Servicio web de demostración. Puedes consultar, enviar, editar y eliminar ejemplos; los cambios no se guardan permanentemente en Internet.</string>
+    <string name="network_list">Consultar</string>
+    <string name="network_detail">Consultar detalle</string>
+    <string name="network_send">Enviar último residuo</string>
+    <string name="network_update">Actualizar ejemplo</string>
+    <string name="network_delete">Eliminar ejemplo web</string>
+    <string name="network_item_name">Recurso de ejemplo %1$d</string>
+    <string name="network_item_subtitle">Recibido del servicio web mediante Retrofit.</string>
 </resources>
