@@ -1,6 +1,7 @@
 package com.cristian.ecoresiduos.ui.screens
 
 import android.app.TimePickerDialog
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ import com.cristian.ecoresiduos.R
 import com.cristian.ecoresiduos.data.WasteType
 import com.cristian.ecoresiduos.ui.WasteFormState
 import java.util.Calendar
+import java.util.Locale
 
 /**
  * Formulario funcional para capturar un nuevo residuo orgánico.
@@ -103,8 +105,12 @@ fun AddRecordScreen(
         OutlinedButton(
             onClick = {
                 val calendar = Calendar.getInstance()
+                // Muestra también el selector nativo de hora en español.
+                val config = Configuration(context.resources.configuration)
+                config.setLocale(Locale.forLanguageTag("es"))
+                val contextEnEspanol = context.createConfigurationContext(config)
                 TimePickerDialog(
-                    context,
+                    contextEnEspanol,
                     { _, hour, minute ->
                         onTimeChange(String.format("%02d:%02d", hour, minute))
                     },
