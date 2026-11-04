@@ -127,7 +127,7 @@ class EcoResiduosViewModel(
             networkLoading = true
             networkMessage = ""
             networkMessage = try { action() }
-            catch (e: Exception) { "Error de conexión: ${e.message ?: "Sin respuesta"}" }
+            catch (e: Exception) { "No se pudo conectar con la web. Revisa Internet e inténtalo de nuevo." }
             networkLoading = false
         }
     }
@@ -135,29 +135,29 @@ class EcoResiduosViewModel(
     /** Recupera publicaciones de ejemplo de la API REST. */
     fun loadRemote() = request {
         remoteItems = networkRepository.list()
-        "GET: ${remoteItems.size} resultados recibidos"
+        "Consulta correcta (GET): ${remoteItems.size} ejemplos recibidos."
     }
 
     fun readRemoteDetail() = request {
         val item = networkRepository.detail(1)
-        "GET /1: ${item.title}"
+        "Consulta de detalle correcta (GET). Recurso ${item.id ?: 1}."
     }
 
     /** Envía por POST el último residuo guardado localmente. */
     fun sendRemote() = request {
         val record = records.firstOrNull() ?: return@request "Registra primero un residuo"
         val response = networkRepository.upload(record)
-        "POST: respuesta recibida, ID ${response.id}"
+        "Envío correcto (POST). Ejemplo recibido con ID ${response.id}."
     }
 
     fun updateRemote() = request {
         val record = records.firstOrNull() ?: return@request "Registra primero un residuo"
         val response = networkRepository.update(1, record)
-        "PUT /1: ${response.title}"
+        "Actualización de ejemplo correcta (PUT). ID ${response.id ?: 1}."
     }
 
     fun deleteRemote() = request {
-        "DELETE /1: código HTTP ${networkRepository.remove(1)}"
+        "Eliminación de ejemplo (DELETE). Código HTTP ${networkRepository.remove(1)}."
     }
 
     companion object {
