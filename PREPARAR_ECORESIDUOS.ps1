@@ -91,12 +91,19 @@ function InstalarHerramientasComandos([string]$Sdk) {
 }
 function Licencias([string]$Manager, [string]$Sdk) {
     Paso 'Aceptando licencias del SDK de Android para el emulador.'
-    $respuestas = @(1..60 | ForEach-Object { 'y' })
-    $preferencia = $ErrorActionPreference
-    $ErrorActionPreference = 'Continue'
-    try { $respuestas | & $Manager "--sdk_root=$Sdk" '--licenses' 2>&1 | Out-Host }
-    finally { $ErrorActionPreference = $preferencia }
-    if ($LASTEXITCODE -ne 0) { ErrorClaro 'No se pudieron aceptar las licencias del SDK. Revisa Internet o el SDK Manager.' }
+    # CMD envía ASCII limpio al gestor Java, evitando el carácter ?y de PowerShell.
+    $cmdTemporal = Join-Path $env:TEMP ('ecoresiduos_licencias_' + [guid]::NewGuid().ToString('N') + '.cmd')
+    $comando = '@echo off' + "`r`n" + '(for /L %%I in (1,1,80) do @echo y)|"' + $Manager + '" "--sdk_root=' + $Sdk + '" --licenses' + "`r`n" + 'exit /b %errorlevel%' + "`r`n"
+    [System.IO.File]::WriteAllText($cmdTemporal, $comando, [System.Text.Encoding]::ASCII)
+    try {
+        $preferencia = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try { & $cmdTemporal 2>&1 | Out-Host; $codigoLicencias = $LASTEXITCODE }
+        finally { $ErrorActionPreference = $preferencia }
+    } finally {
+        Remove-Item -LiteralPath $cmdTemporal -Force -ErrorAction SilentlyContinue
+    }
+    if ($codigoLicencias -ne 0) { ErrorClaro 'No se pudieron aceptar las licencias del SDK. Revisa el SDK Manager.' }
 }
 function InstalarPaquetes([string]$Manager, [string]$Sdk, [string[]]$Paquetes) {
     if ($Paquetes.Count -eq 0) { return }
@@ -194,14 +201,30 @@ try {
             if (!$manager) { $manager = InstalarHerramientasComandos $sdk }
             $avdManager = Join-Path (Split-Path (Split-Path $manager -Parent) -Parent) 'bin\avdmanager.bat'
             if (!(Test-Path $avdManager)) { ErrorClaro 'No se encontró avdmanager.bat en el SDK.' }
-            Licencias $manager $sdk
-            InstalarPaquetes $manager $sdk @('platform-tools','emulator',$SystemImage)
-            Paso 'Creando teléfono Android virtual.'
-            $preferencia = $ErrorActionPreference
-            $ErrorActionPreference = 'Continue'
-            try { 'no' | & $avdManager 'create' 'avd' '--name' $AvdName '--package' $SystemImage '--force' 2>&1 | Out-Host }
-            finally { $ErrorActionPreference = $preferencia }
-            if ($LASTEXITCODE -ne 0) { ErrorClaro 'No se pudo crear el emulador. Revisa Android Studio > Device Manager.' }
+            # Reutiliza Android 35 ya descargado: evita volver a bajar varios GB.
+            $rutaImagen = Join-Path $sdk ($SystemImage.Replace(';', '\') + '\source.properties')
+            if (Test-Path -LiteralPath $rutaImagen) {
+                Write-Host 'Android 35 ya está descargado. No es necesario instalarlo otra vez.'
+            } else {
+                Licencias $manager $sdk
+                InstalarPaquetes $manager $sdk @('platform-tools','emulator',$SystemImage)
+            }
+            Paso 'Creando un teléfono Android virtual para EcoResiduos.'
+            # CMD envía una línea vacía ASCII, que acepta el [no] predeterminado.
+            $cmdTemporal = Join-Path $env:TEMP ('ecoresiduos_avd_' + [guid]::NewGuid().ToString('N') + '.cmd')
+            $comando = '@echo off' + "`r`n" + 'echo.|"' + $avdManager + '" create avd -n "' + $AvdName + '" -k "' + $SystemImage + '" -f' + "`r`n" + 'exit /b %errorlevel%' + "`r`n"
+            [System.IO.File]::WriteAllText($cmdTemporal, $comando, [System.Text.Encoding]::ASCII)
+            try {
+                $preferencia = $ErrorActionPreference
+                $ErrorActionPreference = 'Continue'
+                try { & $cmdTemporal 2>&1 | Out-Host; $codigoAVD = $LASTEXITCODE }
+                finally { $ErrorActionPreference = $preferencia }
+            } finally {
+                Remove-Item -LiteralPath $cmdTemporal -Force -ErrorAction SilentlyContinue
+            }
+            if ($codigoAVD -ne 0) { ErrorClaro 'No se pudo crear el emulador. Revisa Android Studio > Device Manager.' }
+            $avdsDespues = @(& $emulator '-list-avds' 2>$null | Where-Object { $_ -and $_.Trim() })
+            if ($avdsDespues -notcontains $AvdName) { ErrorClaro 'El comando terminó, pero no aparece el emulador nuevo.' }
             $avdElegido = $AvdName
         }
 
