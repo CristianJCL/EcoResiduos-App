@@ -41,18 +41,20 @@
 
     <string name="settings_title">Ajustes</string>
     <string name="settings_language_title">Idioma</string>
-    <string name="settings_language_body">La interfaz está disponible en español e inglés y utiliza el idioma configurado en Android.</string>
+    <string name="settings_language_body">Los menús y mensajes de EcoResiduos se muestran en español.</string>
     <string name="settings_data_title">Datos</string>
-    <string name="settings_data_body">Los registros se administran mediante una capa Repository que mantiene separada la interfaz del origen de datos.</string>
+    <string name="settings_data_body">Los registros se guardan en el teléfono con Room. Puedes consultarlos y editarlos sin Internet.</string>
 
     <string name="nav_network">Web</string>
     <string name="edit_title">Editar registro</string>
     <string name="action_edit">Editar</string>
     <string name="network_title">Conexión con servicio web</string>
-    <string name="network_notice">Servicio público para pruebas. Las operaciones HTTP responden, pero los cambios no se almacenan de forma permanente en el servidor.</string>
+    <string name="network_notice">Servicio web de demostración. Puedes consultar, enviar, editar y eliminar ejemplos; los cambios no se guardan permanentemente en Internet.</string>
     <string name="network_list">Consultar</string>
-    <string name="network_detail">Ver detalle</string>
-    <string name="network_send">Enviar último registro</string>
+    <string name="network_detail">Consultar detalle</string>
+    <string name="network_send">Enviar último residuo</string>
     <string name="network_update">Actualizar ejemplo</string>
-    <string name="network_delete">Eliminar ejemplo</string>
+    <string name="network_delete">Eliminar ejemplo web</string>
+    <string name="network_item_name">Recurso de ejemplo %1$d</string>
+    <string name="network_item_subtitle">Recibido del servicio web mediante Retrofit.</string>
 </resources>
