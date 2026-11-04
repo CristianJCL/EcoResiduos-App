@@ -17,8 +17,7 @@ import com.cristian.ecoresiduos.R
 /**
  * Pantalla de ajustes e información de la aplicación.
  *
- * Los textos se obtienen de recursos localizados para respetar el idioma
- * configurado en el dispositivo.
+ * Los textos se obtienen de recursos de Android y se muestran en español.
  */
 @Composable
 fun SettingsScreen(
