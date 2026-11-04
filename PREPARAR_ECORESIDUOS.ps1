@@ -176,10 +176,19 @@ try {
         }
         if (!(Test-Path $emulator)) { ErrorClaro 'No se pudo instalar Android Emulator.' }
 
+        # Evita seleccionar automáticamente API 37 si existe una versión estable.
         $avds = @(& $emulator '-list-avds' 2>$null | Where-Object { $_ -and $_.Trim() })
         $avdElegido = $null
         if ($avds -contains $AvdName) { $avdElegido = $AvdName }
-        elseif ($avds.Count -gt 0) { $avdElegido = [string]$avds[0] }
+        if (!$avdElegido) {
+            $estables = @($avds | Where-Object { $_ -match 'API[_-]3[3-5](\D|$)' })
+            if ($estables.Count -gt 0) { $avdElegido = [string]$estables[0] }
+        }
+        if (!$avdElegido -and !$manager -and $avds.Count -gt 0) {
+            Write-Host 'AVISO: solo hay un AVD reciente (posiblemente API 37).' -ForegroundColor Yellow
+            Write-Host 'Se intentará con gráficos por software; también puedes crear API 35 en Android Studio.'
+            $avdElegido = [string]$avds[0]
+        }
 
         if (!$avdElegido) {
             if (!$manager) { $manager = InstalarHerramientasComandos $sdk }
@@ -196,22 +205,46 @@ try {
             $avdElegido = $AvdName
         }
 
+        # El estado de BIOS no garantiza que Windows tenga WHPX disponible.
+        Paso 'Comprobando hipervisor de Windows (WHPX/AEHD).'
         $chequeo = @(& $emulator '-accel-check' 2>&1)
+        $codigoAceleracion = $LASTEXITCODE
         $texto = $chequeo -join ' '
-        if ($LASTEXITCODE -ne 0 -or $texto -match 'not installed|not usable|not supported|acceleration.*disabled') {
-            Write-Host 'AVISO: Si el emulador no inicia, activa Virtualización y Plataforma de hipervisor de Windows (WHPX) y reinicia.' -ForegroundColor Yellow
-            Write-Host 'No cambiaré la BIOS ni reiniciaré Windows.'
+        Write-Host $texto
+        $diagnostico = Join-Path $Carpeta 'DIAGNOSTICO_EMULADOR.txt'
+        @('EcoResiduos - diagnostico', "Aceleracion: codigo $codigoAceleracion", $texto, '', "AVD: $avdElegido") | Set-Content -Path $diagnostico -Encoding UTF8
+        if ($codigoAceleracion -ne 0 -or $texto -match 'not installed|not usable|not supported|disabled|not operational') {
+            Write-Host 'Windows requiere aceleración: BIOS habilitada no basta.' -ForegroundColor Yellow
+            Write-Host 'Inicio > Activar o desactivar las características de Windows.'
+            Write-Host 'Marca Plataforma de hipervisor de Windows (WHPX) y reinicia.'
+            Write-Host 'Si requiere administrador, no puede habilitarse desde este BAT.'
+            ErrorClaro 'No hay hipervisor utilizable. Revisa WHPX y reinicia Windows.'
         }
-        Paso "Iniciando emulador: $avdElegido"
-        $proceso = Start-Process -FilePath $emulator -ArgumentList @('-avd', $avdElegido, '-no-boot-anim') -PassThru
+        Paso "Iniciando $avdElegido con gráficos por software."
+        $logOut = Join-Path $env:TEMP 'ecoresiduos_emulador_salida.log'
+        $logErr = Join-Path $env:TEMP 'ecoresiduos_emulador_error.log'
+        Remove-Item -LiteralPath $logOut, $logErr -Force -ErrorAction SilentlyContinue
+        $opciones = @('-avd', $avdElegido, '-no-snapshot', '-no-boot-anim', '-noaudio',
+                     '-gpu', 'software', '-feature', '-Vulkan', '-memory', '1536', '-cores', '2', '-verbose')
+        $proceso = Start-Process -FilePath $emulator -ArgumentList $opciones -PassThru `
+            -RedirectStandardOutput $logOut -RedirectStandardError $logErr
         for ($i=0; $i -lt 150; $i++) {
             $serial = DispositivoListo $adb
             if ($serial) { break }
-            if ($proceso.HasExited) { ErrorClaro 'El emulador se cerró. Activa la virtualización o prueba Device Manager.' }
+            if ($proceso.HasExited) {
+                Start-Sleep -Milliseconds 700
+                $errorTexto = if (Test-Path $logErr) { @(Get-Content $logErr -Tail 35 -ErrorAction SilentlyContinue) } else { @() }
+                $salidaTexto = if (Test-Path $logOut) { @(Get-Content $logOut -Tail 15 -ErrorAction SilentlyContinue) } else { @() }
+                @('', 'Salida:', $salidaTexto, '', 'Errores:', $errorTexto) | Add-Content -Path $diagnostico -Encoding UTF8
+                Write-Host 'El emulador se cerró. Últimos mensajes:' -ForegroundColor Yellow
+                $errorTexto | Select-Object -Last 18 | Out-Host
+                Write-Host "Diagnóstico: $diagnostico"
+                ErrorClaro 'El emulador se cerró. Comparte DIAGNOSTICO_EMULADOR.txt.'
+            }
             if (($i % 12) -eq 0) { Write-Host 'Preparando emulador...' }
             Start-Sleep -Seconds 3
         }
-        if (!$serial) { ErrorClaro 'ADB no detectó un emulador. Revisa Android Studio > Device Manager.' }
+        if (!$serial) { ErrorClaro "ADB no detectó el emulador. Diagnóstico: $diagnostico" }
     }
 
     EsperarInicio $adb $serial
