@@ -16,7 +16,7 @@ import com.cristian.ecoresiduos.data.WasteRecord
 import com.cristian.ecoresiduos.data.WasteRepository
 import com.cristian.ecoresiduos.data.WasteType
 import com.cristian.ecoresiduos.network.NetworkWasteRepository
-import com.cristian.ecoresiduos.network.RemotePost
+import com.cristian.ecoresiduos.network.RemoteWaste
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -62,8 +62,12 @@ class EcoResiduosViewModel(
     var editingId by mutableStateOf<Long?>(null)
         private set
 
-    // 2. SERVICIO WEB: respuestas y estado de conexión.
-    var remoteItems by mutableStateOf<List<RemotePost>>(emptyList())
+    // 2. RESPALDOS: solo muestra registros que realmente vienen del servidor.
+    val cloudServer get() = networkRepository.server
+    val cloudKey get() = networkRepository.publicKey
+    val cloudEmail get() = networkRepository.email
+    val cloudConnected get() = networkRepository.connected
+    var remoteItems by mutableStateOf<List<RemoteWaste>>(emptyList())
         private set
     var networkMessage by mutableStateOf("")
         private set
@@ -115,7 +119,9 @@ class EcoResiduosViewModel(
             date = date,
             time = state.time,
             composted = state.composted,
-            notes = state.notes.trim()
+            notes = state.notes.trim(),
+            cloudId = previous?.cloudId ?: "",
+            syncState = "PENDING"
         )
         viewModelScope.launch { localRepository.save(record) }
         resetForm()
@@ -185,43 +191,83 @@ class EcoResiduosViewModel(
     private var appResolver: ContentResolver? = null
     fun attachResolver(resolver: ContentResolver) { appResolver = resolver }
 
-    // 4. RETROFIT: ejecuta una petición y muestra su resultado o error.
+    // 4. RETROFIT: respaldo real con API REST de Supabase.
+    fun configureCloud(url: String, key: String) {
+        networkMessage = try {
+            networkRepository.configure(url, key)
+            remoteItems = emptyList()
+            "Conexión guardada. Inicia sesión para acceder a tus respaldos."
+        } catch (e: Exception) { e.message ?: "Configuración incorrecta." }
+    }
     private fun request(action: suspend () -> String) {
         viewModelScope.launch {
             networkLoading = true
             networkMessage = ""
-            networkMessage = try { action() }
-            catch (e: Exception) { "No se pudo conectar con la web. Revisa Internet e inténtalo de nuevo." }
+            networkMessage = try { action() } catch (e: retrofit2.HttpException) {
+                when (e.code()) {
+                    400 -> "Datos incorrectos o servicio remoto sin configurar."
+                    401, 403 -> "Acceso denegado. Revisa tu cuenta."
+                    404 -> "Falta crear la tabla de residuos en Supabase."
+                    else -> "Error HTTP " + e.code().toString()
+                }
+            } catch (e: Exception) { e.message ?: "No se pudo conectar a la nube." }
             networkLoading = false
         }
     }
-
-    /** Recupera publicaciones de ejemplo de la API REST. */
+    fun signUpCloud(email: String, password: String) = request {
+        if (networkRepository.signUp(email.trim(), password)) "Cuenta creada; sesión iniciada."
+        else "Cuenta creada. Confirma tu correo y después inicia sesión."
+    }
+    fun loginCloud(email: String, password: String) = request {
+        networkRepository.login(email.trim(), password)
+        remoteItems = networkRepository.list()
+        "Sesión iniciada: " + remoteItems.size.toString() + " registros respaldados."
+    }
+    fun logoutCloud() {
+        networkRepository.logout()
+        remoteItems = emptyList()
+        networkMessage = "Sesión cerrada."
+    }
+    /** POST/PATCH/DELETE reales para los cambios pendientes de Room. */
+    fun syncCloud() = request {
+        val savedIds = networkRepository.list().map { it.id }.toSet()
+        var count = 0
+        for (item in localRepository.allForSync()) {
+            if (item.syncState == "DELETED") {
+                if (item.cloudId in savedIds) networkRepository.remove(item.cloudId)
+                localRepository.finishDeletion(item.id)
+                count++
+            } else if (item.syncState == "PENDING") {
+                if (item.cloudId in savedIds) networkRepository.update(item)
+                else networkRepository.create(item)
+                localRepository.markSynced(item.id)
+                count++
+            }
+        }
+        remoteItems = networkRepository.list()
+        "Sincronizados " + count + " cambios. Total de respaldos: " + remoteItems.size
+    }
     fun loadRemote() = request {
         remoteItems = networkRepository.list()
-        "Consulta correcta (GET): ${remoteItems.size} ejemplos recibidos."
+        "Registros encontrados: " + remoteItems.size
     }
-
-    fun readRemoteDetail() = request {
-        val item = networkRepository.detail(1)
-        "Consulta de detalle correcta (GET). Recurso ${item.id ?: 1}."
+    fun readRemoteDetail(id: String) = request {
+        val item = networkRepository.detail(id) ?: return@request "Ya no existe el respaldo."
+        "Residuo " + item.type + " / " + item.weightKg + " kg / " + item.source
     }
-
-    /** Envía por POST el último residuo guardado localmente. */
-    fun sendRemote() = request {
-        val record = records.firstOrNull() ?: return@request "Registra primero un residuo"
-        val response = networkRepository.upload(record)
-        "Envío correcto (POST). Ejemplo recibido con ID ${response.id}."
+    /** Recupera solo los registros que no existan ya en el teléfono. */
+    fun restoreCloud() = request {
+        remoteItems = networkRepository.list()
+        var count = 0
+        for (item in remoteItems) {
+            if (localRepository.restore(networkRepository.toLocal(item))) count++
+        }
+        "Se recuperaron " + count + " registros nuevos, sin duplicados."
     }
-
-    fun updateRemote() = request {
-        val record = records.firstOrNull() ?: return@request "Registra primero un residuo"
-        val response = networkRepository.update(1, record)
-        "Actualización de ejemplo correcta (PUT). ID ${response.id ?: 1}."
-    }
-
-    fun deleteRemote() = request {
-        "Eliminación de ejemplo (DELETE). Código HTTP ${networkRepository.remove(1)}."
+    fun deleteRemote(id: String) = request {
+        networkRepository.remove(id)
+        remoteItems = networkRepository.list()
+        "Respaldo eliminado. El registro del teléfono permanece."
     }
 
     companion object {

@@ -1,88 +1,117 @@
 package com.cristian.ecoresiduos.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.cristian.ecoresiduos.R
-import com.cristian.ecoresiduos.network.RemotePost
+import com.cristian.ecoresiduos.network.RemoteWaste
 
-/** Permite ejecutar y ver las respuestas de la API de prueba. */
+/** Respaldos reales: sin contenido ficticio de JSONPlaceholder. */
 @Composable
 fun NetworkScreen(
-    items: List<RemotePost>,
-    message: String,
-    loading: Boolean,
-    onList: () -> Unit,
-    onDetail: () -> Unit,
-    onSend: () -> Unit,
-    onUpdate: () -> Unit,
-    onDelete: () -> Unit,
-    bottomPadding: Dp
+    server: String, publicKey: String, userEmail: String, connected: Boolean,
+    localPending: Int, items: List<RemoteWaste>, message: String, loading: Boolean,
+    onConfigure: (String, String) -> Unit, onSignUp: (String, String) -> Unit,
+    onLogin: (String, String) -> Unit, onLogout: () -> Unit,
+    onSync: () -> Unit, onList: () -> Unit, onDetail: (String) -> Unit,
+    onRestore: () -> Unit, onDelete: (String) -> Unit, bottomPadding: Dp
 ) {
+    var url by remember(server) { mutableStateOf(server) }
+    var key by remember(publicKey) { mutableStateOf(publicKey) }
+    var email by remember(userEmail) { mutableStateOf(userEmail) }
+    var password by remember { mutableStateOf("") }
+    var pendingDelete by remember { mutableStateOf<String?>(null) }
+
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp)
-            .padding(top = 20.dp, bottom = bottomPadding + 20.dp),
+            .padding(top = 20.dp, bottom = bottomPadding + 24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text(stringResource(R.string.network_title), style = MaterialTheme.typography.headlineMedium)
-        Text(stringResource(R.string.network_notice), style = MaterialTheme.typography.bodyMedium)
-
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = onList, enabled = !loading) {
-                Text(stringResource(R.string.network_list))
+        Text("Sincronización", style = MaterialTheme.typography.headlineMedium)
+        Text("Guarda residuos sin Internet. Cuando tengas conexión, respáldalos en Supabase.")
+        if (!connected) {
+            Text("Conectar la nube", style = MaterialTheme.typography.titleMedium)
+            OutlinedTextField(value = url, onValueChange = { url = it },
+                label = { Text("URL del proyecto Supabase") }, singleLine = true,
+                modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = key, onValueChange = { key = it },
+                label = { Text("Clave pública (anon o publishable)") }, singleLine = true,
+                modifier = Modifier.fillMaxWidth())
+            Button(enabled = !loading, onClick = { onConfigure(url, key) }) {
+                Text("Guardar conexión")
             }
-            OutlinedButton(onClick = onDetail, enabled = !loading) {
-                Text(stringResource(R.string.network_detail))
+            HorizontalDivider()
+            OutlinedTextField(value = email, onValueChange = { email = it },
+                label = { Text("Correo electrónico") }, singleLine = true,
+                modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = password, onValueChange = { password = it },
+                visualTransformation = PasswordVisualTransformation(),
+                label = { Text("Contraseña") }, singleLine = true,
+                modifier = Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { onLogin(email, password) }, enabled = !loading) {
+                    Text("Iniciar sesión")
+                }
+                OutlinedButton(onClick = { onSignUp(email, password) }, enabled = !loading) {
+                    Text("Crear cuenta")
+                }
             }
-        }
-        Button(onClick = onSend, enabled = !loading) {
-            Text(stringResource(R.string.network_send))
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = onUpdate, enabled = !loading) {
-                Text(stringResource(R.string.network_update))
+            Text("La tabla debe estar creada en Supabase. No uses la clave secreta service_role.",
+                style = MaterialTheme.typography.bodySmall)
+        } else {
+            Text("Cuenta: " + userEmail, style = MaterialTheme.typography.titleSmall)
+            Text("Registros pendientes: " + localPending)
+            Text("Respaldos encontrados: " + items.size)
+            Button(onClick = onSync, enabled = !loading, modifier = Modifier.fillMaxWidth()) {
+                Text("Sincronizar ahora")
             }
-            OutlinedButton(onClick = onDelete, enabled = !loading) {
-                Text(stringResource(R.string.network_delete))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(onClick = onList, enabled = !loading) { Text("Ver respaldos") }
+                OutlinedButton(onClick = onRestore, enabled = !loading) { Text("Recuperar registros") }
             }
-        }
-
-        if (loading) CircularProgressIndicator()
-        if (message.isNotBlank()) {
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Text(message, modifier = Modifier.padding(16.dp))
-            }
-        }
-        items.forEach { post ->
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    Text(
-                        stringResource(R.string.network_item_name, post.id ?: 0),
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Text(
-                        stringResource(R.string.network_item_subtitle),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+            TextButton(onClick = onLogout) { Text("Cerrar sesión") }
+            HorizontalDivider()
+            Text("Registros de la nube", style = MaterialTheme.typography.titleMedium)
+            items.forEach { item ->
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text(item.source + " · " + item.weightKg + " kg",
+                            style = MaterialTheme.typography.titleSmall)
+                        Text(item.date + " · " + item.time)
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            TextButton(onClick = { onDetail(item.id) }) { Text("Ver detalle") }
+                            TextButton(onClick = { pendingDelete = item.id }) {
+                                Text("Eliminar respaldo")
+                            }
+                        }
+                    }
                 }
             }
         }
+        if (loading) CircularProgressIndicator()
+        if (message.isNotBlank()) Card {
+            Text(message, modifier = Modifier.padding(12.dp))
+        }
     }
+    if (pendingDelete != null) AlertDialog(
+        onDismissRequest = { pendingDelete = null },
+        title = { Text("¿Eliminar el respaldo?") },
+        text = { Text("Se borrará de Internet, pero no del teléfono.") },
+        confirmButton = {
+            TextButton(onClick = {
+                pendingDelete?.let(onDelete)
+                pendingDelete = null
+            }) { Text("Eliminar") }
+        },
+        dismissButton = {
+            TextButton(onClick = { pendingDelete = null }) { Text("Cancelar") }
+        }
+    )
 }

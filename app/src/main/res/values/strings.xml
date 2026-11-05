@@ -45,7 +45,7 @@
     <string name="settings_data_title">Datos</string>
     <string name="settings_data_body">Los registros se guardan en el teléfono con Room. Puedes consultarlos y editarlos sin Internet.</string>
 
-    <string name="nav_network">Web</string>
+    <string name="nav_network">Nube</string>
     <string name="edit_title">Editar registro</string>
     <string name="action_edit">Editar</string>
     <string name="network_title">Conexión con servicio web</string>
