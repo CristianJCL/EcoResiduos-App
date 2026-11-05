@@ -17,7 +17,13 @@ class RoomWasteRepository(private val dao: WasteDao) : WasteRepository {
         if (record.id == 0L) dao.insert(pending) else dao.update(pending)
     }
 
-    override suspend fun allForSync(): List<WasteRecord> = dao.getAllForSync()
+    override suspend fun allForSync(): List<WasteRecord> = dao.getAllForSync().map { record ->
+        if (record.cloudId.isNotBlank()) record else {
+            val fixed = record.copy(cloudId = UUID.randomUUID().toString())
+            dao.update(fixed)
+            fixed
+        }
+    }
     override suspend fun markSynced(id: Long) = dao.markSynced(id)
     override suspend fun finishDeletion(id: Long) = dao.deleteById(id)
     override suspend fun restore(record: WasteRecord): Boolean {

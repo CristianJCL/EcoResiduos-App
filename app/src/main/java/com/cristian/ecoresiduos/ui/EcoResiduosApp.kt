@@ -144,6 +144,7 @@ private fun AppScreens(
                 userEmail = viewModel.cloudEmail,
                 connected = viewModel.cloudConnected,
                 localPending = viewModel.records.count { it.syncState != "SYNCED" },
+                backupCount = if (viewModel.cloudLoaded) viewModel.remoteItems.size else null,
                 items = viewModel.remoteItems,
                 message = viewModel.networkMessage,
                 loading = viewModel.networkLoading,

@@ -69,6 +69,8 @@ class EcoResiduosViewModel(
     val cloudConnected get() = networkRepository.connected
     var remoteItems by mutableStateOf<List<RemoteWaste>>(emptyList())
         private set
+    var cloudLoaded by mutableStateOf(false)
+        private set
     var networkMessage by mutableStateOf("")
         private set
     var networkLoading by mutableStateOf(false)
@@ -196,6 +198,7 @@ class EcoResiduosViewModel(
         networkMessage = try {
             networkRepository.configure(url, key)
             remoteItems = emptyList()
+            cloudLoaded = false
             "Conexión guardada. Inicia sesión para acceder a tus respaldos."
         } catch (e: Exception) { e.message ?: "Configuración incorrecta." }
     }
@@ -207,7 +210,7 @@ class EcoResiduosViewModel(
                 when (e.code()) {
                     400 -> "Datos incorrectos o servicio remoto sin configurar."
                     401, 403 -> "Acceso denegado. Revisa tu cuenta."
-                    404 -> "Falta crear la tabla de residuos en Supabase."
+                    404 -> "No se puede consultar el respaldo. Comprueba la configuración del servicio."
                     else -> "Error HTTP " + e.code().toString()
                 }
             } catch (e: Exception) { e.message ?: "No se pudo conectar a la nube." }
@@ -221,11 +224,13 @@ class EcoResiduosViewModel(
     fun loginCloud(email: String, password: String) = request {
         networkRepository.login(email.trim(), password)
         remoteItems = networkRepository.list()
+        cloudLoaded = true
         "Sesión iniciada: " + remoteItems.size.toString() + " registros respaldados."
     }
     fun logoutCloud() {
         networkRepository.logout()
         remoteItems = emptyList()
+        cloudLoaded = false
         networkMessage = "Sesión cerrada."
     }
     /** POST/PATCH/DELETE reales para los cambios pendientes de Room. */
@@ -245,10 +250,12 @@ class EcoResiduosViewModel(
             }
         }
         remoteItems = networkRepository.list()
+        cloudLoaded = true
         "Sincronizados " + count + " cambios. Total de respaldos: " + remoteItems.size
     }
     fun loadRemote() = request {
         remoteItems = networkRepository.list()
+        cloudLoaded = true
         "Registros encontrados: " + remoteItems.size
     }
     fun readRemoteDetail(id: String) = request {
@@ -258,6 +265,7 @@ class EcoResiduosViewModel(
     /** Recupera solo los registros que no existan ya en el teléfono. */
     fun restoreCloud() = request {
         remoteItems = networkRepository.list()
+        cloudLoaded = true
         var count = 0
         for (item in remoteItems) {
             if (localRepository.restore(networkRepository.toLocal(item))) count++
@@ -267,6 +275,7 @@ class EcoResiduosViewModel(
     fun deleteRemote(id: String) = request {
         networkRepository.remove(id)
         remoteItems = networkRepository.list()
+        cloudLoaded = true
         "Respaldo eliminado. El registro del teléfono permanece."
     }
 

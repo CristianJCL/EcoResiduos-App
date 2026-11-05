@@ -8,20 +8,20 @@
     <string name="nav_settings">Ajustes</string>
 
     <string name="home_title">EcoResiduos</string>
-    <string name="home_subtitle">Control sencillo de residuos orgánicos para escuelas y pequeñas empresas.</string>
+    <string name="home_subtitle">Consulta tus registros y conoce cuánto residuo orgánico generas.</string>
     <string name="summary_records">Registros</string>
     <string name="summary_weight">Peso total</string>
     <string name="summary_composted">Enviados a composta</string>
     <string name="kg_value">%.1f kg</string>
 
     <string name="records_title">Registros</string>
-    <string name="records_empty">Aún no hay registros.</string>
+    <string name="records_empty">Aún no tienes registros. Agrega el primero desde Nuevo.</string>
     <string name="record_weight">Peso: %.1f kg</string>
     <string name="record_source">Origen: %1$s</string>
     <string name="record_notes">Observaciones: %1$s</string>
     <string name="record_date_time">%1$s · %2$s</string>
     <string name="record_composted_yes">Destino: composta</string>
-    <string name="record_composted_no">Destino: pendiente</string>
+    <string name="record_composted_no">No destinado a composta</string>
 
     <string name="add_title">Nuevo registro</string>
     <string name="field_weight">Peso aproximado (kg)</string>
@@ -40,14 +40,37 @@
     <string name="action_delete">Eliminar registro</string>
 
     <string name="settings_title">Ajustes</string>
-    <string name="settings_language_title">Idioma</string>
-    <string name="settings_language_body">Los menús y mensajes de EcoResiduos se muestran en español.</string>
-    <string name="settings_data_title">Datos</string>
-    <string name="settings_data_body">Los registros se guardan en el teléfono con Room. Puedes consultarlos y editarlos sin Internet.</string>
 
     <string name="nav_network">Nube</string>
     <string name="edit_title">Editar registro</string>
     <string name="action_edit">Editar</string>
     <string name="reminder_notification_title">Registra tus residuos</string>
     <string name="reminder_notification_body">Anota los residuos orgánicos que generaste hoy.</string>
+
+    <string name="cloud_title">Sincronización</string>
+    <string name="cloud_account_title">Tu cuenta</string>
+    <string name="cloud_account_description">Accede a tus respaldos y continúa donde lo dejaste.</string>
+    <string name="cloud_email">Correo electrónico</string>
+    <string name="cloud_password">Contraseña</string>
+    <string name="cloud_login">Iniciar sesión</string>
+    <string name="cloud_signup">Crear cuenta</string>
+    <string name="cloud_setup_needed">Configura el servicio en Opciones avanzadas para vincular tu cuenta.</string>
+    <string name="cloud_connected">Cuenta vinculada</string>
+    <string name="cloud_pending">Por respaldar</string>
+    <string name="cloud_backups">Respaldos</string>
+    <string name="cloud_sync">Sincronizar ahora</string>
+    <string name="cloud_view">Ver respaldos</string>
+    <string name="cloud_restore">Recuperar registros</string>
+    <string name="cloud_logout">Cerrar sesión</string>
+    <string name="cloud_detail">Ver detalle</string>
+    <string name="cloud_delete">Eliminar respaldo</string>
+    <string name="cloud_empty">Todavía no hay respaldos en tu cuenta.</string>
+    <string name="cloud_advanced">Opciones avanzadas</string>
+    <string name="cloud_hide_options">Ocultar opciones avanzadas</string>
+    <string name="cloud_service_settings">Servicio de respaldo</string>
+    <string name="cloud_url">Dirección del servicio</string>
+    <string name="cloud_key">Clave pública</string>
+    <string name="cloud_save_settings">Guardar configuración</string>
+    <string name="cloud_confirm_title">¿Eliminar este respaldo?</string>
+    <string name="cloud_confirm_body">Se eliminará de tu cuenta en la nube. El registro de este dispositivo se conservará.</string>
 </resources>
