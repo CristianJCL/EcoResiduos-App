@@ -60,7 +60,7 @@ fun SettingsScreen(
         Text("Apariencia", style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             listOf("light" to "Claro", "dark" to "Oscuro", "system" to "Sistema").forEach { (value, label) ->
-                FilterChip(selected = settings.theme == value, onClick = { settings.setTheme(value) },
+                FilterChip(selected = settings.theme == value, onClick = { settings.updateTheme(value) },
                     label = { Text(label) })
             }
         }
@@ -68,7 +68,7 @@ fun SettingsScreen(
         HorizontalDivider()
         Text("Registros", style = MaterialTheme.typography.titleMedium)
         SettingToggle("Confirmar antes de eliminar", settings.confirmDelete) {
-            settings.setConfirmDelete(it)
+            settings.updateConfirmDelete(it)
         }
         Text("Tipo predeterminado al crear un registro")
         WasteType.entries.forEach { type ->
@@ -79,7 +79,7 @@ fun SettingsScreen(
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(selected = settings.defaultType == type,
-                    onClick = { settings.setDefaultType(type) })
+                    onClick = { settings.updateDefaultType(type) })
                 Text(label)
             }
         }

@@ -26,16 +26,16 @@ class AppSettings(context: Context) {
     var reminderMinute by mutableStateOf(prefs.getInt("minuto", 0))
         private set
 
-    fun setTheme(value: String) {
+    fun updateTheme(value: String) {
         if (value !in listOf("system", "light", "dark")) return
         theme = value
         prefs.edit().putString("tema", value).apply()
     }
-    fun setConfirmDelete(value: Boolean) {
+    fun updateConfirmDelete(value: Boolean) {
         confirmDelete = value
         prefs.edit().putBoolean("confirmar", value).apply()
     }
-    fun setDefaultType(value: WasteType) {
+    fun updateDefaultType(value: WasteType) {
         defaultType = value
         prefs.edit().putString("tipo", value.name).apply()
     }
