@@ -121,7 +121,7 @@ class EcoResiduosViewModel(
             composted = state.composted,
             notes = state.notes.trim(),
             cloudId = previous?.cloudId ?: "",
-            syncState = "PENDING"
+            syncState = previous?.syncState ?: "PENDING"
         )
         viewModelScope.launch { localRepository.save(record) }
         resetForm()
@@ -237,7 +237,7 @@ class EcoResiduosViewModel(
                 if (item.cloudId in savedIds) networkRepository.remove(item.cloudId)
                 localRepository.finishDeletion(item.id)
                 count++
-            } else if (item.syncState == "PENDING") {
+            } else if (item.syncState == "PENDING" || item.syncState == "DIRTY") {
                 if (item.cloudId in savedIds) networkRepository.update(item)
                 else networkRepository.create(item)
                 localRepository.markSynced(item.id)

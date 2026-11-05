@@ -12,7 +12,8 @@ class RoomWasteRepository(private val dao: WasteDao) : WasteRepository {
 
     override suspend fun save(record: WasteRecord) {
         val cloudId = record.cloudId.ifBlank { UUID.randomUUID().toString() }
-        val pending = record.copy(cloudId = cloudId, syncState = "PENDING")
+        val state = if (record.syncState == "SYNCED" || record.syncState == "DIRTY") "DIRTY" else "PENDING"
+        val pending = record.copy(cloudId = cloudId, syncState = state)
         if (record.id == 0L) dao.insert(pending) else dao.update(pending)
     }
 
@@ -28,6 +29,8 @@ class RoomWasteRepository(private val dao: WasteDao) : WasteRepository {
     override suspend fun clearAll() = dao.clearAll()
 
     override suspend fun delete(id: Long) {
-        dao.markDeleted(id)
+        val record = dao.getById(id) ?: return
+        if (record.syncState == "PENDING") dao.deleteById(id)
+        else dao.markDeleted(id)
     }
 }
