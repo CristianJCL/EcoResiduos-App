@@ -4,25 +4,68 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Headers
+import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** Rutas REST utilizadas para las operaciones HTTP de prueba. */
+/** Métodos REST que pide Iván: GET, POST, PATCH y DELETE. */
 interface EcoApiService {
-    @GET("posts")
-    suspend fun getAll(@Query("_limit") limit: Int = 5): List<RemotePost>
+    @POST("auth/v1/signup")
+    suspend fun signUp(@Header("apikey") key: String, @Body input: LoginInput): AuthSession
 
-    @GET("posts/{id}")
-    suspend fun getById(@Path("id") id: Int): RemotePost
+    @POST("auth/v1/token")
+    suspend fun login(
+        @Query("grant_type") grantType: String = "password",
+        @Header("apikey") key: String,
+        @Body input: LoginInput
+    ): AuthSession
 
-    @POST("posts")
-    suspend fun create(@Body post: RemotePost): RemotePost
+    @POST("auth/v1/token")
+    suspend fun refresh(
+        @Query("grant_type") grantType: String = "refresh_token",
+        @Header("apikey") key: String,
+        @Body input: RefreshInput
+    ): AuthSession
 
-    @PUT("posts/{id}")
-    suspend fun update(@Path("id") id: Int, @Body post: RemotePost): RemotePost
+    @GET("rest/v1/residuos")
+    suspend fun list(
+        @Header("apikey") key: String,
+        @Header("Authorization") token: String,
+        @Query("select") select: String = "*",
+        @Query("order") order: String = "date.desc"
+    ): List<RemoteWaste>
 
-    @DELETE("posts/{id}")
-    suspend fun delete(@Path("id") id: Int): Response<Unit>
+    @GET("rest/v1/residuos")
+    suspend fun detail(
+        @Header("apikey") key: String,
+        @Header("Authorization") token: String,
+        @Query("id") filter: String,
+        @Query("select") select: String = "*"
+    ): List<RemoteWaste>
+
+    @Headers("Prefer: return=representation")
+    @POST("rest/v1/residuos")
+    suspend fun create(
+        @Header("apikey") key: String,
+        @Header("Authorization") token: String,
+        @Body record: RemoteWaste
+    ): List<RemoteWaste>
+
+    @Headers("Prefer: return=representation")
+    @PATCH("rest/v1/residuos")
+    suspend fun update(
+        @Header("apikey") key: String,
+        @Header("Authorization") token: String,
+        @Query("id") filter: String,
+        @Body record: RemoteWaste
+    ): List<RemoteWaste>
+
+    @DELETE("rest/v1/residuos")
+    suspend fun delete(
+        @Header("apikey") key: String,
+        @Header("Authorization") token: String,
+        @Query("id") filter: String
+    ): Response<Unit>
 }

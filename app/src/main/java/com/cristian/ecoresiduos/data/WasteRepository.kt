@@ -9,4 +9,8 @@ interface WasteRepository {
     suspend fun save(record: WasteRecord)
     suspend fun delete(id: Long)
     suspend fun clearAll()
+    suspend fun allForSync(): List<WasteRecord>
+    suspend fun markSynced(id: Long)
+    suspend fun finishDeletion(id: Long)
+    suspend fun restore(record: WasteRecord): Boolean
 }

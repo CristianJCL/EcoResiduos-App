@@ -1,5 +1,6 @@
 package com.cristian.ecoresiduos.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -16,5 +17,7 @@ data class WasteRecord(
     val date: String,
     val time: String,
     val composted: Boolean,
-    val notes: String = ""
+    val notes: String = "",
+    @ColumnInfo(defaultValue = "''") val cloudId: String = "",
+    @ColumnInfo(defaultValue = "'PENDING'") val syncState: String = "PENDING"
 )

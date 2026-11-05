@@ -1,6 +1,7 @@
 package com.cristian.ecoresiduos.data
 
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 /** Usa el DAO para guardar y consultar residuos en la base del teléfono. */
 class RoomWasteRepository(private val dao: WasteDao) : WasteRepository {
@@ -10,16 +11,23 @@ class RoomWasteRepository(private val dao: WasteDao) : WasteRepository {
     override suspend fun getById(id: Long): WasteRecord? = dao.getById(id)
 
     override suspend fun save(record: WasteRecord) {
-        if (record.id == 0L) {
-            dao.insert(record)       // Nuevo registro.
-        } else {
-            dao.update(record)       // Registro existente.
-        }
+        val cloudId = record.cloudId.ifBlank { UUID.randomUUID().toString() }
+        val pending = record.copy(cloudId = cloudId, syncState = "PENDING")
+        if (record.id == 0L) dao.insert(pending) else dao.update(pending)
+    }
+
+    override suspend fun allForSync(): List<WasteRecord> = dao.getAllForSync()
+    override suspend fun markSynced(id: Long) = dao.markSynced(id)
+    override suspend fun finishDeletion(id: Long) = dao.deleteById(id)
+    override suspend fun restore(record: WasteRecord): Boolean {
+        if (dao.getByCloudId(record.cloudId) != null) return false
+        dao.insert(record.copy(id = 0, syncState = "SYNCED"))
+        return true
     }
 
     override suspend fun clearAll() = dao.clearAll()
 
     override suspend fun delete(id: Long) {
-        dao.deleteById(id)
+        dao.markDeleted(id)
     }
 }
