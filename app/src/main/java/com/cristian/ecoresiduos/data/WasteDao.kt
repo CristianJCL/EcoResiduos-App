@@ -21,6 +21,9 @@ interface WasteDao {
     @Update
     suspend fun update(record: WasteRecord)
 
+    @Query("DELETE FROM waste_records")
+    suspend fun clearAll()
+
     @Query("DELETE FROM waste_records WHERE id = :id")
     suspend fun deleteById(id: Long)
 }

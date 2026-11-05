@@ -17,6 +17,8 @@ class RoomWasteRepository(private val dao: WasteDao) : WasteRepository {
         }
     }
 
+    override suspend fun clearAll() = dao.clearAll()
+
     override suspend fun delete(id: Long) {
         dao.deleteById(id)
     }

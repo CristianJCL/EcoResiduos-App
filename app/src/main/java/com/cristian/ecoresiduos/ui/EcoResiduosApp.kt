@@ -22,6 +22,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.cristian.ecoresiduos.R
+import com.cristian.ecoresiduos.settings.AppSettings
 import com.cristian.ecoresiduos.ui.screens.*
 
 /** Pantallas disponibles desde el menú principal. */
@@ -37,7 +38,7 @@ private val destinations = listOf(
 
 /** Muestra NavigationBar en teléfonos y NavigationRail en pantallas anchas. */
 @Composable
-fun EcoResiduosApp(viewModel: EcoResiduosViewModel) {
+fun EcoResiduosApp(viewModel: EcoResiduosViewModel, settings: AppSettings) {
     val nav = rememberNavController()
     val entry by nav.currentBackStackEntryAsState()
     val route = entry?.destination?.route ?: "home"
@@ -55,7 +56,7 @@ fun EcoResiduosApp(viewModel: EcoResiduosViewModel) {
                         )
                     }
                 }
-                Box(Modifier.weight(1f)) { AppScreens(nav, viewModel) }
+                Box(Modifier.weight(1f)) { AppScreens(nav, viewModel, settings) }
             }
         } else {
             Scaffold(bottomBar = {
@@ -70,7 +71,7 @@ fun EcoResiduosApp(viewModel: EcoResiduosViewModel) {
                     }
                 }
             }) { padding ->
-                AppScreens(nav, viewModel, padding.calculateBottomPadding())
+                AppScreens(nav, viewModel, settings, padding.calculateBottomPadding())
             }
         }
     }
@@ -90,6 +91,7 @@ private fun goTo(nav: NavHostController, route: String) {
 private fun AppScreens(
     nav: NavHostController,
     viewModel: EcoResiduosViewModel,
+    settings: AppSettings,
     bottomPadding: Dp = 0.dp
 ) {
     NavHost(navController = nav, startDestination = "home", modifier = Modifier.fillMaxSize()) {
@@ -107,6 +109,7 @@ private fun AppScreens(
             RecordsScreen(
                 records = viewModel.records,
                 onDelete = viewModel::deleteRecord,
+                confirmDelete = settings.confirmDelete,
                 onEdit = { id ->
                     viewModel.beginEdit(id)
                     goTo(nav, "add")
@@ -148,7 +151,14 @@ private fun AppScreens(
             )
         }
         composable("settings") {
-            SettingsScreen(bottomPadding = bottomPadding)
+            SettingsScreen(
+                settings = settings,
+                message = viewModel.settingsMessage,
+                onExport = viewModel::exportCsv,
+                onImport = viewModel::importCsv,
+                onClearAll = viewModel::clearAllRecords,
+                bottomPadding = bottomPadding
+            )
         }
     }
 }

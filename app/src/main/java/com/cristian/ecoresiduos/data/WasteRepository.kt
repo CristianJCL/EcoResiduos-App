@@ -8,4 +8,5 @@ interface WasteRepository {
     suspend fun getById(id: Long): WasteRecord?
     suspend fun save(record: WasteRecord)
     suspend fun delete(id: Long)
+    suspend fun clearAll()
 }

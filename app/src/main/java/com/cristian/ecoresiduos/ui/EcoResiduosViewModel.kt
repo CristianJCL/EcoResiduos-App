@@ -1,5 +1,8 @@
 package com.cristian.ecoresiduos.ui
 
+import android.net.Uri
+import android.content.ContentResolver
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -7,12 +10,16 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.cristian.ecoresiduos.data.CsvRecords
+import com.cristian.ecoresiduos.settings.AppSettings
 import com.cristian.ecoresiduos.data.WasteRecord
 import com.cristian.ecoresiduos.data.WasteRepository
 import com.cristian.ecoresiduos.data.WasteType
 import com.cristian.ecoresiduos.network.NetworkWasteRepository
 import com.cristian.ecoresiduos.network.RemotePost
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -39,14 +46,18 @@ data class WasteFormState(
  */
 class EcoResiduosViewModel(
     private val localRepository: WasteRepository,
-    private val networkRepository: NetworkWasteRepository
+    private val networkRepository: NetworkWasteRepository,
+    private val settings: AppSettings
 ) : ViewModel() {
 
     // 1. DATOS LOCALES: lista visible y formulario de captura.
     private val _records = mutableStateListOf<WasteRecord>()
     val records: List<WasteRecord> get() = _records
 
-    var formState by mutableStateOf(WasteFormState())
+    var settingsMessage by mutableStateOf("")
+        private set
+
+    var formState by mutableStateOf(WasteFormState(type = settings.defaultType))
         private set
     var editingId by mutableStateOf<Long?>(null)
         private set
@@ -118,8 +129,61 @@ class EcoResiduosViewModel(
 
     fun resetForm() {
         editingId = null
-        formState = WasteFormState()
+        formState = WasteFormState(type = settings.defaultType)
     }
+
+    /** Exporta un CSV real al archivo elegido en Android. */
+    fun exportCsv(uri: Uri) {
+        val copy = records.toList()
+        viewModelScope.launch {
+            settingsMessage = try {
+                withContext(Dispatchers.IO) {
+                    val resolver = appResolver ?: error("Abre el proyecto en Android Studio.")
+                    resolver.openOutputStream(uri)?.bufferedWriter(Charsets.UTF_8)?.use {
+                        it.write(CsvRecords.export(copy))
+                    } ?: error("No se pudo abrir el archivo.")
+                }
+                "Se exportaron ${copy.size} registros."
+            } catch (e: Exception) { "Error al exportar: ${e.message}" }
+        }
+    }
+
+    fun importCsv(uri: Uri) {
+        viewModelScope.launch {
+            settingsMessage = try {
+                val imported = withContext(Dispatchers.IO) {
+                    val resolver = appResolver ?: error("No se encontró el archivo.")
+                    val text = resolver.openInputStream(uri)?.bufferedReader(Charsets.UTF_8)?.use {
+                        it.readText()
+                    } ?: error("No se pudo leer el archivo.")
+                    CsvRecords.import(text)
+                }
+                val current = records.toList().map(::signature).toMutableSet()
+                var added = 0
+                imported.forEach { record ->
+                    if (current.add(signature(record))) {
+                        localRepository.save(record)
+                        added++
+                    }
+                }
+                "Importación terminada: ${added} nuevos, ${imported.size - added} repetidos."
+            } catch (e: Exception) { "No se pudo importar: ${e.message}" }
+        }
+    }
+
+    private fun signature(item: WasteRecord): String = listOf(
+        item.type, item.weightKg, item.source, item.date, item.time, item.composted, item.notes
+    ).joinToString("|")
+
+    fun clearAllRecords() {
+        viewModelScope.launch {
+            localRepository.clearAll()
+            settingsMessage = "Se eliminaron los registros del teléfono."
+        }
+    }
+
+    private var appResolver: ContentResolver? = null
+    fun attachResolver(resolver: ContentResolver) { appResolver = resolver }
 
     // 4. RETROFIT: ejecuta una petición y muestra su resultado o error.
     private fun request(action: suspend () -> String) {
@@ -164,11 +228,12 @@ class EcoResiduosViewModel(
         /** Construye el ViewModel con los Repository del contenedor de aplicación. */
         fun factory(
             localRepository: WasteRepository,
-            networkRepository: NetworkWasteRepository
+            networkRepository: NetworkWasteRepository,
+            settings: AppSettings
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                EcoResiduosViewModel(localRepository, networkRepository) as T
+                EcoResiduosViewModel(localRepository, networkRepository, settings) as T
         }
     }
 }

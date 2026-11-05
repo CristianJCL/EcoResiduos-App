@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,6 +19,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,10 +39,28 @@ import com.cristian.ecoresiduos.data.WasteType
 fun RecordsScreen(
     records: List<WasteRecord>,
     onDelete: (Long) -> Unit,
+    confirmDelete: Boolean,
     onEdit: (Long) -> Unit,
     bottomPadding: Dp,
     modifier: Modifier = Modifier
 ) {
+    var pendingDelete by remember { mutableStateOf<Long?>(null) }
+    if (pendingDelete != null) {
+        AlertDialog(
+            onDismissRequest = { pendingDelete = null },
+            title = { Text("¿Eliminar registro?") },
+            text = { Text("Este registro se eliminará del teléfono.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    pendingDelete?.let(onDelete)
+                    pendingDelete = null
+                }) { Text("Eliminar") }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingDelete = null }) { Text("Cancelar") }
+            }
+        )
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -69,7 +92,9 @@ fun RecordsScreen(
                 ) { record ->
                     RecordCard(
                         record = record,
-                        onDelete = { onDelete(record.id) },
+                        onDelete = {
+                            if (confirmDelete) pendingDelete = record.id else onDelete(record.id)
+                        },
                         onEdit = { onEdit(record.id) }
                     )
                 }

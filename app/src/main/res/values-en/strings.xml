@@ -57,4 +57,6 @@
     <string name="network_delete">Eliminar ejemplo web</string>
     <string name="network_item_name">Recurso de ejemplo %1$d</string>
     <string name="network_item_subtitle">Recibido del servicio web mediante Retrofit.</string>
+    <string name="reminder_notification_title">Registra tus residuos</string>
+    <string name="reminder_notification_body">Anota los residuos orgánicos que generaste hoy.</string>
 </resources>

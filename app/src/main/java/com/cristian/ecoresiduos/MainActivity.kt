@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.cristian.ecoresiduos.settings.AppSettings
 import com.cristian.ecoresiduos.ui.EcoResiduosApp
 import com.cristian.ecoresiduos.ui.EcoResiduosViewModel
 import com.cristian.ecoresiduos.ui.theme.EcoResiduosTheme
@@ -15,15 +18,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            EcoResiduosTheme {
+            val settings = remember { AppSettings(applicationContext) }
+            val systemDark = isSystemInDarkTheme()
+            val dark = when (settings.theme) {
+                "dark" -> true
+                "light" -> false
+                else -> systemDark
+            }
+            EcoResiduosTheme(darkTheme = dark) {
                 val container = (application as EcoResiduosApplication).container
                 val viewModel: EcoResiduosViewModel = viewModel(
                     factory = EcoResiduosViewModel.factory(
                         container.localRepository,
-                        container.networkRepository
+                        container.networkRepository,
+                        settings
                     )
                 )
-                EcoResiduosApp(viewModel)
+                viewModel.attachResolver(contentResolver)
+                EcoResiduosApp(viewModel, settings)
             }
         }
     }
