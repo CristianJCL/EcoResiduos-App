@@ -12,7 +12,7 @@ class CsvRecordsTest {
         val row = WasteRecord(
             type = WasteType.FOOD, weightKg = 2.5, source = "Cafetería, planta 1",
             date = "05/11/2026", time = "12:00",
-            composted = true, notes = "cáscaras con \\"comillas\\""
+            composted = true, notes = "cáscaras con \"comillas\""
         )
         val imported = CsvRecords.import(CsvRecords.export(listOf(row))).single()
         assertEquals(row.type, imported.type)
