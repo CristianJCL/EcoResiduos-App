@@ -73,4 +73,27 @@
     <string name="cloud_save_settings">Guardar configuración</string>
     <string name="cloud_confirm_title">¿Eliminar este respaldo?</string>
     <string name="cloud_confirm_body">Se eliminará de tu cuenta en la nube. El registro de este dispositivo se conservará.</string>
+
+    <string name="settings_appearance">Apariencia</string>
+    <string name="settings_records_section">Registros</string>
+    <string name="settings_confirm_delete">Confirmar antes de eliminar</string>
+    <string name="settings_default_type">Tipo de residuo predeterminado</string>
+    <string name="settings_notifications">Notificaciones</string>
+    <string name="settings_daily_reminder">Recordatorio diario</string>
+    <string name="settings_approx_time">El horario puede variar unos minutos según el dispositivo.</string>
+    <string name="settings_data_section">Mis datos</string>
+    <string name="settings_export">Exportar registros</string>
+    <string name="settings_import">Importar registros</string>
+    <string name="settings_csv_info">Archivos CSV compatibles con Excel.</string>
+    <string name="settings_clear_all">Eliminar todos mis registros</string>
+    <string name="settings_about">Acerca de EcoResiduos</string>
+    <string name="settings_version">Versión 1.0</string>
+    <string name="settings_about_body">Registro y seguimiento de residuos orgánicos.</string>
+    <string name="settings_storage_info">Tus registros se guardan en este dispositivo.</string>
+    <string name="settings_clear_title">¿Eliminar todos los registros?</string>
+    <string name="settings_clear_body">Se eliminarán todos los registros guardados en este dispositivo.</string>
+    <string name="settings_continue">Continuar</string>
+    <string name="settings_final_title">Confirmar eliminación</string>
+    <string name="settings_final_body">Esta acción no se puede deshacer. Puedes exportar tus registros primero.</string>
+    <string name="settings_clear_permanent">Eliminar definitivamente</string>
 </resources>

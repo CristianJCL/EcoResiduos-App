@@ -57,7 +57,7 @@ fun SettingsScreen(
     ) {
         Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineMedium)
 
-        Text("Apariencia", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_appearance), style = MaterialTheme.typography.titleMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             listOf("light" to "Claro", "dark" to "Oscuro", "system" to "Sistema").forEach { (value, label) ->
                 FilterChip(selected = settings.theme == value, onClick = { settings.updateTheme(value) },
@@ -66,16 +66,16 @@ fun SettingsScreen(
         }
 
         HorizontalDivider()
-        Text("Registros", style = MaterialTheme.typography.titleMedium)
-        SettingToggle("Confirmar antes de eliminar", settings.confirmDelete) {
+        Text(stringResource(R.string.settings_records_section), style = MaterialTheme.typography.titleMedium)
+        SettingToggle(stringResource(R.string.settings_confirm_delete), settings.confirmDelete) {
             settings.updateConfirmDelete(it)
         }
-        Text("Tipo predeterminado al crear un registro")
+        Text(stringResource(R.string.settings_default_type))
         WasteType.entries.forEach { type ->
             val label = when (type) {
-                WasteType.FOOD -> "Restos de comida"
-                WasteType.FRUIT_VEGETABLE -> "Frutas y verduras"
-                WasteType.GARDEN -> "Jardinería"
+                WasteType.FOOD -> stringResource(R.string.type_food)
+                WasteType.FRUIT_VEGETABLE -> stringResource(R.string.type_fruit_vegetable)
+                WasteType.GARDEN -> stringResource(R.string.type_garden)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(selected = settings.defaultType == type,
@@ -85,8 +85,8 @@ fun SettingsScreen(
         }
 
         HorizontalDivider()
-        Text("Recordatorio diario", style = MaterialTheme.typography.titleMedium)
-        SettingToggle("Recordarme registrar los residuos", settings.dailyReminder) { enable ->
+        Text(stringResource(R.string.settings_notifications), style = MaterialTheme.typography.titleMedium)
+        SettingToggle(stringResource(R.string.settings_daily_reminder), settings.dailyReminder) { enable ->
             if (enable && Build.VERSION.SDK_INT >= 33 &&
                 ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
                 PackageManager.PERMISSION_GRANTED
@@ -105,50 +105,50 @@ fun SettingsScreen(
             }) {
                 Text("Hora: %02d:%02d".format(settings.reminderHour, settings.reminderMinute))
             }
-            Text("Android puede mostrar el aviso unos minutos después de la hora elegida.",
+            Text(stringResource(R.string.settings_approx_time),
                 style = MaterialTheme.typography.bodySmall)
         }
 
         HorizontalDivider()
-        Text("Datos y almacenamiento", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_data_section), style = MaterialTheme.typography.titleMedium)
         Button(onClick = { saveFile.launch("EcoResiduos_registros.csv") }) {
-            Text("Exportar registros a CSV")
+            Text(stringResource(R.string.settings_export))
         }
         OutlinedButton(onClick = {
             openFile.launch(arrayOf("text/*", "text/csv", "application/csv", "application/octet-stream"))
-        }) { Text("Importar registros de CSV") }
-        Text("Puedes abrir el CSV en Excel y recuperar tus datos cuando lo necesites.",
+        }) { Text(stringResource(R.string.settings_import)) }
+        Text(stringResource(R.string.settings_csv_info),
             style = MaterialTheme.typography.bodySmall)
         if (message.isNotBlank()) Text(message, color = MaterialTheme.colorScheme.primary)
-        TextButton(onClick = { firstWarning = true }) { Text("Eliminar todos los registros") }
+        TextButton(onClick = { firstWarning = true }) { Text(stringResource(R.string.settings_clear_all)) }
 
         HorizontalDivider()
-        Text("Acerca de EcoResiduos", style = MaterialTheme.typography.titleMedium)
-        Text("Versión 1.0")
-        Text("Control de residuos orgánicos para escuelas y pequeños negocios.")
-        Text("Los datos locales se almacenan en tu dispositivo.",
+        Text(stringResource(R.string.settings_about), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_version))
+        Text(stringResource(R.string.settings_about_body))
+        Text(stringResource(R.string.settings_storage_info),
             style = MaterialTheme.typography.bodySmall)
     }
 
     if (firstWarning) AlertDialog(
         onDismissRequest = { firstWarning = false },
-        title = { Text("¿Eliminar todos los registros?") },
-        text = { Text("Se borrarán todos los residuos almacenados en este teléfono.") },
+        title = { Text(stringResource(R.string.settings_clear_title)) },
+        text = { Text(stringResource(R.string.settings_clear_body)) },
         confirmButton = { TextButton(onClick = {
             firstWarning = false
             finalWarning = true
-        }) { Text("Continuar") } },
-        dismissButton = { TextButton(onClick = { firstWarning = false }) { Text("Cancelar") } }
+        }) { Text(stringResource(R.string.settings_continue)) } },
+        dismissButton = { TextButton(onClick = { firstWarning = false }) { Text(stringResource(R.string.action_cancel)) } }
     )
     if (finalWarning) AlertDialog(
         onDismissRequest = { finalWarning = false },
-        title = { Text("Confirmación final") },
-        text = { Text("Esta acción no se puede deshacer. Puedes exportar un CSV antes de continuar.") },
+        title = { Text(stringResource(R.string.settings_final_title)) },
+        text = { Text(stringResource(R.string.settings_final_body)) },
         confirmButton = { TextButton(onClick = {
             finalWarning = false
             onClearAll()
-        }) { Text("Borrar definitivamente") } },
-        dismissButton = { TextButton(onClick = { finalWarning = false }) { Text("Cancelar") } }
+        }) { Text(stringResource(R.string.settings_clear_permanent)) } },
+        dismissButton = { TextButton(onClick = { finalWarning = false }) { Text(stringResource(R.string.action_cancel)) } }
     )
 }
 
