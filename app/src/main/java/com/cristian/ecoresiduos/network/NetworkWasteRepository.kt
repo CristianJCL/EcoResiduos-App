@@ -1,6 +1,7 @@
 package com.cristian.ecoresiduos.network
 
 import android.content.Context
+import com.cristian.ecoresiduos.BuildConfig
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,14 +10,14 @@ import com.cristian.ecoresiduos.data.WasteType
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-/** Conecta Room con Supabase sin utilizar claves secretas de servidor. */
+/** Acceso remoto mediante Retrofit. La configuración es del desarrollador, no del usuario. */
 class NetworkWasteRepository(context: Context) {
     private val preferences = context.getSharedPreferences("ecoresiduos_nube", Context.MODE_PRIVATE)
 
-    var server by mutableStateOf(preferences.getString("servidor", "") ?: "")
-        private set
-    var publicKey by mutableStateOf(preferences.getString("public_key", "") ?: "")
-        private set
+    // Valores públicos incluidos durante la compilación. Nunca se piden al usuario.
+    private val server = BuildConfig.CLOUD_URL.trim().trimEnd('/')
+    private val publicKey = BuildConfig.CLOUD_PUBLIC_KEY.trim()
+
     var email by mutableStateOf(preferences.getString("email", "") ?: "")
         private set
     var userId by mutableStateOf(preferences.getString("user_id", "") ?: "")
@@ -27,19 +28,7 @@ class NetworkWasteRepository(context: Context) {
     private var expiration = preferences.getLong("expiration", 0L)
 
     val configured get() = server.startsWith("https://") && publicKey.isNotBlank()
-    val connected get() = userId.isNotBlank() && refreshToken.isNotBlank()
-
-    fun configure(url: String, key: String) {
-        val clean = url.trim().trimEnd('/')
-        require(clean.startsWith("https://") && clean.contains(".supabase.co")) {
-            "Introduce una URL válida de tu proyecto Supabase."
-        }
-        require(key.trim().isNotEmpty()) { "Falta la clave pública (anon/publishable)." }
-        if (server != clean || publicKey != key.trim()) logout()
-        server = clean
-        publicKey = key.trim()
-        preferences.edit().putString("servidor", server).putString("public_key", publicKey).apply()
-    }
+    val connected get() = configured && userId.isNotBlank() && refreshToken.isNotBlank()
 
     fun logout() {
         accessToken = ""
@@ -52,7 +41,7 @@ class NetworkWasteRepository(context: Context) {
     }
 
     private fun service(): EcoApiService {
-        require(configured) { "Configura primero la URL y clave pública de Supabase." }
+        check(configured) { "Los respaldos en línea no están disponibles todavía." }
         return Retrofit.Builder().baseUrl("$server/")
             .addConverterFactory(GsonConverterFactory.create()).build()
             .create(EcoApiService::class.java)

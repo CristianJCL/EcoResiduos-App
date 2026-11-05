@@ -41,20 +41,19 @@
 
     <string name="settings_title">Ajustes</string>
 
-    <string name="nav_network">Nube</string>
+    <string name="nav_network">Respaldos</string>
     <string name="edit_title">Editar registro</string>
     <string name="action_edit">Editar</string>
     <string name="reminder_notification_title">Registra tus residuos</string>
     <string name="reminder_notification_body">Anota los residuos orgánicos que generaste hoy.</string>
 
-    <string name="cloud_title">Sincronización</string>
+    <string name="cloud_title">Mis respaldos</string>
     <string name="cloud_account_title">Tu cuenta</string>
     <string name="cloud_account_description">Accede a tus respaldos y continúa donde lo dejaste.</string>
     <string name="cloud_email">Correo electrónico</string>
     <string name="cloud_password">Contraseña</string>
     <string name="cloud_login">Iniciar sesión</string>
     <string name="cloud_signup">Crear cuenta</string>
-    <string name="cloud_setup_needed">Configura el servicio en Opciones avanzadas para vincular tu cuenta.</string>
     <string name="cloud_connected">Cuenta vinculada</string>
     <string name="cloud_pending">Por respaldar</string>
     <string name="cloud_backups">Respaldos</string>
@@ -65,12 +64,6 @@
     <string name="cloud_detail">Ver detalle</string>
     <string name="cloud_delete">Eliminar respaldo</string>
     <string name="cloud_empty">Todavía no hay respaldos en tu cuenta.</string>
-    <string name="cloud_advanced">Opciones avanzadas</string>
-    <string name="cloud_hide_options">Ocultar opciones avanzadas</string>
-    <string name="cloud_service_settings">Servicio de respaldo</string>
-    <string name="cloud_url">Dirección del servicio</string>
-    <string name="cloud_key">Clave pública</string>
-    <string name="cloud_save_settings">Guardar configuración</string>
     <string name="cloud_confirm_title">¿Eliminar este respaldo?</string>
     <string name="cloud_confirm_body">Se eliminará de tu cuenta en la nube. El registro de este dispositivo se conservará.</string>
 
@@ -96,4 +89,8 @@
     <string name="settings_final_title">Confirmar eliminación</string>
     <string name="settings_final_body">Esta acción no se puede deshacer. Puedes exportar tus registros primero.</string>
     <string name="settings_clear_permanent">Eliminar definitivamente</string>
+    <string name="backup_intro">Conserva una copia de tus registros y recupérala cuando la necesites.</string>
+    <string name="backup_file_section">Copia de seguridad</string>
+    <string name="backup_save_file">Guardar copia</string>
+    <string name="backup_restore_file">Recuperar desde archivo</string>
 </resources>

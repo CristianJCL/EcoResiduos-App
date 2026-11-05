@@ -63,8 +63,7 @@ class EcoResiduosViewModel(
         private set
 
     // 2. RESPALDOS: solo muestra registros que realmente vienen del servidor.
-    val cloudServer get() = networkRepository.server
-    val cloudKey get() = networkRepository.publicKey
+    val cloudReady get() = networkRepository.configured
     val cloudEmail get() = networkRepository.email
     val cloudConnected get() = networkRepository.connected
     var remoteItems by mutableStateOf<List<RemoteWaste>>(emptyList())
@@ -194,31 +193,23 @@ class EcoResiduosViewModel(
     fun attachResolver(resolver: ContentResolver) { appResolver = resolver }
 
     // 4. RETROFIT: respaldo real con API REST de Supabase.
-    fun configureCloud(url: String, key: String) {
-        networkMessage = try {
-            networkRepository.configure(url, key)
-            remoteItems = emptyList()
-            cloudLoaded = false
-            "Conexión guardada. Inicia sesión para acceder a tus respaldos."
-        } catch (e: Exception) { e.message ?: "Configuración incorrecta." }
-    }
     private fun request(action: suspend () -> String) {
         viewModelScope.launch {
             networkLoading = true
             networkMessage = ""
             networkMessage = try { action() } catch (e: retrofit2.HttpException) {
                 when (e.code()) {
-                    400 -> "Datos incorrectos o servicio remoto sin configurar."
+                    400 -> "Revisa los datos introducidos e inténtalo de nuevo."
                     401, 403 -> "Acceso denegado. Revisa tu cuenta."
-                    404 -> "No se puede consultar el respaldo. Comprueba la configuración del servicio."
+                    404 -> "El respaldo no está disponible en este momento."
                     else -> "Error HTTP " + e.code().toString()
                 }
-            } catch (e: Exception) { e.message ?: "No se pudo conectar a la nube." }
+            } catch (e: Exception) { "No fue posible conectar. Comprueba tu conexión e inténtalo de nuevo." }
             networkLoading = false
         }
     }
     fun signUpCloud(email: String, password: String) = request {
-        if (networkRepository.signUp(email.trim(), password)) "Cuenta creada; sesión iniciada."
+        if (networkRepository.signUp(email.trim(), password)) "Cuenta creada. Ya puedes utilizar tus respaldos."
         else "Cuenta creada. Confirma tu correo y después inicia sesión."
     }
     fun loginCloud(email: String, password: String) = request {

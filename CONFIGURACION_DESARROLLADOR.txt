@@ -1,0 +1,20 @@
+ECORESIDUOS - CONFIGURACIÓN DEL SERVICIO EN LÍNEA (SOLO DESARROLLADOR)
+
+La aplicación funciona sin Internet con Room y copias CSV. El usuario final nunca
+introduce una dirección del servidor ni claves de aplicación.
+
+Para activar sincronización de Internet en un APK distribuible:
+1) Crear un proyecto de Supabase del desarrollador y habilitar Auth por correo.
+2) Ejecutar SUPABASE_CONFIGURACION.sql con RLS activa; comprobar que cada cuenta
+   puede acceder únicamente a sus propios registros.
+3) En ~/.gradle/gradle.properties introducir las variables públicas:
+   ECO_SUPABASE_URL=https://TU-PROYECTO.supabase.co
+   ECO_SUPABASE_PUBLIC_KEY=sb_publishable_TU_CLAVE_PUBLICA
+4) Compilar el APK una sola vez. Los usuarios no realizan ninguno de estos pasos.
+
+No incluir service_role ni sb_secret en el APK. La clave publishable se puede
+incluir públicamente siempre que la base esté protegida con políticas RLS.
+El APK compilado sin estos dos valores no habilita cuentas remotas, pero sí
+conserva las copias CSV y todos los registros locales.
+
+La evaluación de Retrofit exige una prueba en una instancia real con estos datos.

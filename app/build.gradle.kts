@@ -18,6 +18,12 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Configuración del servicio, incluida en el APK por el desarrollador.
+        val cloudUrl = (project.findProperty("ECO_SUPABASE_URL") as? String).orEmpty()
+        val cloudKey = (project.findProperty("ECO_SUPABASE_PUBLIC_KEY") as? String).orEmpty()
+        buildConfigField("String", "CLOUD_URL", "\"$cloudUrl\"")
+        buildConfigField("String", "CLOUD_PUBLIC_KEY", "\"$cloudKey\"")
     }
 
     buildTypes {
@@ -40,6 +46,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }

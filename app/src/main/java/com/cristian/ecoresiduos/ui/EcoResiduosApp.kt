@@ -139,8 +139,7 @@ private fun AppScreens(
         }
         composable("network") {
             NetworkScreen(
-                server = viewModel.cloudServer,
-                publicKey = viewModel.cloudKey,
+                onlineAvailable = viewModel.cloudReady,
                 userEmail = viewModel.cloudEmail,
                 connected = viewModel.cloudConnected,
                 localPending = viewModel.records.count { it.syncState != "SYNCED" },
@@ -148,10 +147,12 @@ private fun AppScreens(
                 items = viewModel.remoteItems,
                 message = viewModel.networkMessage,
                 loading = viewModel.networkLoading,
-                onConfigure = viewModel::configureCloud,
                 onSignUp = viewModel::signUpCloud,
                 onLogin = viewModel::loginCloud,
                 onLogout = viewModel::logoutCloud,
+                fileMessage = viewModel.settingsMessage,
+                onExport = viewModel::exportCsv,
+                onImport = viewModel::importCsv,
                 onSync = viewModel::syncCloud,
                 onList = viewModel::loadRemote,
                 onDetail = viewModel::readRemoteDetail,
